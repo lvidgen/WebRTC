@@ -1,0 +1,45 @@
+ <!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>title</title>
+<link href="style.css" rel="stylesheet">
+  </head>
+  <body>
+  <div id = "wrapper">
+  <div id="topbar">
+  <div>
+  <label for="mopener">
+  <img id="burger" src="images/menu.png">
+  </label>
+  <input type="checkbox" id="mopener" autocomplete="off">
+  <ul id = "menu">
+  <li class = "menuItem" id="screen">Share screen</li>
+  <li class = "menuItem">two</li>
+  </ul>
+  </div>
+  <div id="infowrap">
+  <div id="logMessage">Welcome! Please choose a username to log in: </div>
+  <span id="logInForm">
+  <input id="myId"><button id="logIn">Submit</button>
+  </span>
+ <div id="peerDeets">Please enter your friend's ID here: <input id="peerId"> and click here: <button id="connectTo">Connect</button> or wait for a connection.</div>
+  </div>
+  </div>
+  
+  <div id="messageArea"></div>
+  <div id="sendarea">
+  <div id="leftcol">
+  <textarea id="sendMessageBox"></textarea>
+  </div>
+  <div id="rightcol">
+  <button id="sendButton">Send</button>
+  </div>
+  </div>
+  </div>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/peerjs/0.3.18/peer.min.js"></script>  
+  <script src="webrtc.js"></script>
+  
+  </body>
+</html>

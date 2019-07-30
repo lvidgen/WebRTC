@@ -1,0 +1,80 @@
+	* {
+	box-sizing: border-box;
+	}
+	body,html{
+	height:100%;
+	margin: 0;
+	padding: 0.5vh;
+	}
+	#wrapper{
+	display: grid;
+    grid-template-rows: auto 1fr auto;
+    grid-template-columns: 100%;
+	height: 99vh;
+	}
+	#peerDeets{
+	display:none;
+	}
+	#messageArea{
+	overflow:auto;
+	}
+	#sendarea{
+	display: none;
+	grid-template-columns: 80% 19%;
+	grid-gap:1%;
+	}
+
+	#sendButton{
+	background-color:DodgerBlue ;
+	height:100%;
+	width:100%;
+	cursor: pointer;
+	color: white;
+	font-weight:bold;
+	}
+	#sendMessageBox{
+	width:100%;
+	}
+	#burger{
+	width: 4vh;
+	height: auto;
+	cursor:pointer;
+	display:none;
+	}
+	#topbar{
+	display:grid;
+	grid-template-columns: 19% 80%;
+	grid-gap:1%;
+	
+	}
+	#infowrap{
+	text-align:right;
+	padding-right: 2px;
+	}
+	#menu{
+	position:absolute;
+	left:3vh;
+	margin-top:0px;
+	border:1px solid;
+	width:10%;
+	list-style:none;
+	padding-left:1vh;
+	display:none;
+	background-color:white;
+	}
+	.menuItem{
+	/*	padding: 0.5vh 1vh 0.5vh 1vh; */
+	}
+	.menuItem:hover{
+		color:white;
+		cursor:pointer;
+		background-color:skyBlue;
+	}
+	#mopener{
+	display:none;
+	}
+	
+	label,
+input:checked + #menu {
+display:block;
+	}
