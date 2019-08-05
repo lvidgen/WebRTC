@@ -70,6 +70,9 @@
 		cursor:pointer;
 		background-color:skyBlue;
 	}
+	#menu_screen{
+		display:none;
+	}
 	#mopener{
 	display:none;
 	}
@@ -77,4 +80,13 @@
 	label,
 input:checked + #menu {
 display:block;
+	}
+	#vid_canvas{
+		display:none;
+		position:absolute;
+		top:25%;
+		left:25%;
+		border:solid;
+		height: 25%;
+		width: 15%;
 	}

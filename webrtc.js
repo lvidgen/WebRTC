@@ -1,5 +1,5 @@
             (function () {
-		//		document.getElementById("mopener").checked=false;
+				document.getElementById("mopener").checked=false;
                 var lastPeerId = null;
                 var peer = null; // Own peer object
                 var peerId = null;
@@ -14,6 +14,7 @@
 				var conDiv = document.getElementById("peerDeets");
 				var myName = null;
 				var theirName = null;
+				var mediaConnection = null;
 				
 
                 /**
@@ -29,7 +30,8 @@
                     peer = new Peer(myName, {
                         debug: 2
                     });
-					
+
+				
 					peer.on('error', function(err) { 
 					if(err.type =='unavailable-id'){
 					logMess.innerHTML="That username has already been taken. Please choose another: ";
@@ -62,10 +64,12 @@
                         conn = c;
 						theirName = conn.peer;
 						showLogIns();
-                        ready();
                     });
 
+
+					
 					}
+					
 			        function join() {
                     // Close old connection
                     if (conn) {
@@ -81,20 +85,20 @@
 					theirName = conn.peer;
 					showLogIns();		
                     });
-                    // Handle incoming data (messages only since this is the signal sender)
-                    conn.on('data', function (data) {
-                        addMessage(theirName+": " + data);
-                    });
-                    conn.on('close', function () {
-                        status.innerHTML = "Connection closed";
-                    });
                 };
 					
 					function showLogIns(){			
                         logMess.innerHTML+=" Connected to "+theirName+".";
 						conDiv.style.display="none";
 						document.getElementById("sendarea").style.display="grid";
-					//	document.getElementById("burger").style.display="inline";
+						document.getElementById("burger").style.display="inline";	
+					
+					peer.on('call', function( mCon) {
+						mediaConnection=mCon;
+						answerCall(mCon)						
+					});
+					
+					ready();
 					}
 					
 					
@@ -109,8 +113,10 @@
                     conn.on('close', function () {
                         status.innerHTML = "Connection reset<br>Awaiting connection...";
                         conn = null;
-                        start(true);
                     });
+					
+
+
                 }
 				
 			function addMessage(msg) {
@@ -137,9 +143,13 @@
 	
 			
 			document.getElementById("menu").onclick=function(e){
+			document.getElementById("mopener").checked=false;
 			switch (e.target.id){
 				case "screen":
 				shareScreen();
+				break;
+				case "menu_vid":
+				shareVideo();
 				break;
 			}
 			}
@@ -161,5 +171,38 @@
 			sendMessBox.addEventListener('keyup', function (e) {
 				pressEnter(e, sendIt)
 			});
-				
+
+			//start menu items
+			async function shareVideo() {
+			  let stream, vid = null;
+
+			  try {
+				stream = await navigator.mediaDevices.getUserMedia({ audio: true, video: true });
+				mediaConnection = peer.call(theirName, stream);
+				showVid();
+			  } catch(err) {
+				/* handle the error */
+			  }
+			}
+			
+			async function answerCall(media) {
+			  let stream, vid = null;
+			  try {
+				stream = await navigator.mediaDevices.getUserMedia({ audio: true, video: true });
+				media.answer(stream);
+				showVid();
+			  } catch(err) {
+				console.log(err)
+				/* handle the error */
+			  }
+			}
+			
+			function showVid(){
+				mediaConnection.on('stream', function(peerstream) { 				
+				let vid = document.getElementById("vid_canvas");
+				vid.style.display="block";
+				vid.srcObject = peerstream;
+				});
+			}
+			
 		})();
