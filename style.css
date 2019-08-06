@@ -82,11 +82,24 @@ input:checked + #menu {
 display:block;
 	}
 	#vid_canvas{
-		display:none;
-		position:absolute;
-		top:25%;
-		left:25%;
-		border:solid;
-		height: 25%;
-		width: 15%;
+
+	}
+	
+	.draggable {
+	display:none;
+	position: absolute;
+	top:0;
+	left:50%;
+	z-index: 9;
+	background-color: #f1f1f1;
+	text-align: center;
+	border: 1px solid #d3d3d3;
+	}
+
+	.dragheader {
+	padding: 10px;
+	cursor: move;
+	z-index: 10;
+	background-color: #2196F3;
+	color: #fff;
 	}

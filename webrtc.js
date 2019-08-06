@@ -103,10 +103,19 @@
 					
 					
 				    function ready() {
-                    conn.on('data', function (data) {
-                        switch (data) {
-                             default:
-                                addMessage(theirName+": " + data);
+                    conn.on('data', function (obj) {
+                        switch (obj.tag) {
+                             case "file":
+								var file = new File([obj.data], obj.filename, { type: obj.filetype, lastModified: Date.now() })
+								var objectURL = URL.createObjectURL(file);								
+								var pom = document.createElement('a');
+								pom.setAttribute('href', objectURL);
+								pom.setAttribute('download', obj.filename);
+								document.body.appendChild(pom)
+								pom.click();
+								break;
+							 case "msg":
+                                addMessage(theirName+": " + obj.data);
                                 break;
                         };
                     });
@@ -130,7 +139,7 @@
                     if (conn.open) {
                         var msg = sendMessageBox.value;
                         sendMessageBox.value = "";
-                        conn.send(msg);
+                        conn.send({tag:"msg", data: msg});
                         addMessage(myName+": " + msg);
                     }			
 			}
@@ -173,6 +182,8 @@
 			});
 
 			//start menu items
+			
+			//video sharing
 			async function shareVideo() {
 			  let stream, vid = null;
 
@@ -198,11 +209,21 @@
 			}
 			
 			function showVid(){
-				mediaConnection.on('stream', function(peerstream) { 				
+				mediaConnection.on('stream', function(peerstream) {
+				document.getElementById("vid_wrapper").style.display="block";
 				let vid = document.getElementById("vid_canvas");
-				vid.style.display="block";
 				vid.srcObject = peerstream;
 				});
 			}
+			
+			// file sharing
+			document.getElementById("file_inp").onchange=function(){
+				    var file = this.files[0];
+					var blob = new Blob(this.files, {type: file.type});
+					console.log(blob)
+					conn.send({tag:"file", data:blob, filetype: file.type, filename:file.name})
+				
+			}
+			
 			
 		})();
