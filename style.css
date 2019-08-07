@@ -55,15 +55,16 @@
 	position:absolute;
 	left:3vh;
 	margin-top:0px;
-	border:1px solid;
-	width:10%;
+	border:.1vh solid;
+	width:auto;
 	list-style:none;
-	padding-left:1vh;
+	padding-left:0vh;
 	display:none;
 	background-color:white;
 	}
 	.menuItem{
-	/*	padding: 0.5vh 1vh 0.5vh 1vh; */
+	padding: 0.5vh 1vh 0.5vh 1vh;
+	border: .1vh solid;
 	}
 	.menuItem:hover{
 		color:white;
