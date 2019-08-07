@@ -15,6 +15,12 @@
 				var myName = null;
 				var theirName = null;
 				var mediaConnection = null;
+				var fp = document.getElementById('fileProgress');
+				var receiveBuffer = [];
+				var receivedSize = 0;
+				var infilename;
+				var infilesize;
+
 				
 
                 /**
@@ -64,10 +70,7 @@
                         conn = c;
 						theirName = conn.peer;
 						showLogIns();
-                    });
-
-
-					
+						});
 					}
 					
 			        function join() {
@@ -105,14 +108,17 @@
 				    function ready() {
                     conn.on('data', function (obj) {
                         switch (obj.tag) {
+							case "fileinfo":
+                                infilename=obj.filename;
+								infilesize=obj.filesize;
+								fp.style.display="inline";
+								fp.value = 0;
+								fp.max = infilesize;
+								document.getElementById('fileText').textContent=`Receiving '${infilename}' (0/${infilesize} bytes)`;
+								infilemod=Date.now();
+                                break;
                              case "file":
-								var file = new File([obj.data], obj.filename, { type: obj.filetype, lastModified: Date.now() })
-								var objectURL = URL.createObjectURL(file);								
-								var pom = document.createElement('a');
-								pom.setAttribute('href', objectURL);
-								pom.setAttribute('download', obj.filename);
-								document.body.appendChild(pom)
-								pom.click();
+								receiveFile(obj.data)
 								break;
 							 case "msg":
                                 addMessage(theirName+": " + obj.data);
@@ -216,14 +222,64 @@
 				});
 			}
 			
-			// file sharing
 			document.getElementById("file_inp").onchange=function(){
-				    var file = this.files[0];
-					var blob = new Blob(this.files, {type: file.type});
-					console.log(blob)
-					conn.send({tag:"file", data:blob, filetype: file.type, filename:file.name})
-				
+			  fp.style.display="inline";
+			  const file = this.files[0];
+			  document.getElementById('fileText').textContent=`Sending '${file.name}' (0/${file.size} bytes)`;
+			  // Handle 0 size files.
+			  //statusMessage.textContent = '';
+			  if (file.size === 0) {
+				//bitrateDiv.innerHTML = '';
+				//statusMessage.textContent = 'File is empty, please select a non-empty file';
+				return;
+			  }
+			  fp.value=0;
+			  fp.max = file.size;
+			  conn.send({tag:"fileinfo", filename:file.name, filesize: file.size})
+			  const chunkSize = 16384;
+			  fileReader = new FileReader();
+			  let offset = 0;
+			  fileReader.addEventListener('error', error => console.error('Error reading file:', error));
+			  fileReader.addEventListener('abort', event => console.log('File reading aborted:', event));
+			  fileReader.addEventListener('load', e => {
+				conn.send({tag:"file", data: e.target.result});
+				offset += e.target.result.byteLength;
+				document.getElementById('fileText').textContent=`Sending '${file.name}' (${offset}/${file.size} bytes)`;
+				fp.value = offset;
+				if (offset < file.size) {
+				  readSlice(offset);
+				} else {
+				document.getElementById('fileText').textContent=`Sent '${file.name}' (${file.size} bytes)`;
+				fp.style.display="none";				
+				}
+			  });
+			  const readSlice = o => {
+				const slice = file.slice(offset, o + chunkSize);
+				fileReader.readAsArrayBuffer(slice);
+			  };
+			  readSlice(0);
 			}
 			
+			function receiveFile(data) {
+			  receiveBuffer.push(data);
+			  receivedSize += data.byteLength;
+			  fp.value = receivedSize;
+			  document.getElementById('fileText').textContent=`Receiving '${infilename}' (${receivedSize}/${infilesize} bytes)`;
+			  if (receivedSize === infilesize) {
+				const received = new Blob(receiveBuffer);
+				receiveBuffer = [];
+				var dv = document.createElement("div");
+				var lnk = document.createElement("a");
+				lnk.href = URL.createObjectURL(received);
+				lnk.download = infilename;
+				lnk.appendChild(document.createTextNode(`Click to download '${infilename}' (${infilesize} bytes)`));
+				document.getElementById('fileText').textContent=`Received '${infilename}' (${infilesize} bytes)`;
+				dv.appendChild(lnk);
+				message.appendChild(dv);
+				lnk.scrollIntoView(false);
+				fp.style.display="none";
+				receivedSize=0;
+			  }
+			}
 			
 		})();

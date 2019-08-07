@@ -85,7 +85,9 @@ display:block;
 	#vid_canvas{
 
 	}
-	
+	#fileProgress{
+		display:none;
+	}
 	.draggable {
 	display:none;
 	position: absolute;
