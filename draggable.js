@@ -1,12 +1,19 @@
-(function(){
-//Make the DIV element draggagle:
-var drags = document.getElementsByClassName("draggable"), i=0, len = drags.length;
-for (i; i<len;i++){
-makeDraggable(drags[i])
-}
-
-function makeDraggable(elmnt) {
-   elmnt.firstElementChild.onmousedown = function(e){
+function makeWindow(tag, vidcon, txt) {
+	var wrap = document.createElement("div");
+	wrap.className="draggable";
+	wrap.style.zIndex=++openWins;
+	var hdr = document.createElement("div");
+	hdr.className="dragheader";
+	hdr.textContent=txt;
+	var cont = null;
+	wrap.appendChild(hdr);
+	wrap.onmousedown = function(e){
+		if(wrap.style.zIndex < openWins){
+			wrap.style.zIndex = ++openWins;
+		}
+	}
+	
+	hdr.onmousedown = function(e){
 	e = e || window.event;
     e.preventDefault();
     // get the mouse cursor position at startup:
@@ -26,9 +33,24 @@ function makeDraggable(elmnt) {
     pos3 = e.clientX;
     pos4 = e.clientY;
     // set the element's new position:
-    elmnt.style.top = (elmnt.offsetTop - pos2) + "px";
-    elmnt.style.left = (elmnt.offsetLeft - pos1) + "px";
+    wrap.style.top = (wrap.offsetTop - pos2) + "px";
+    wrap.style.left = (wrap.offsetLeft - pos1) + "px";
 			}
 		}
+
+	switch(tag){
+		case "vid":
+		cont = document.createElement("video");
+		cont.autoplay = true;
+		vidcon.on('stream', function(peerstream) {
+			cont.srcObject = peerstream;
+			wrap.appendChild(cont);
+			document.body.appendChild(wrap);
+		});
+		break;
+		case "pic":
+		cont = document.createElement("img");
+		break;
+		}	
+
 	}
-})()

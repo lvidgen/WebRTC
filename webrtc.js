@@ -1,25 +1,13 @@
-            (function () {
+
 				document.getElementById("mopener").checked=false;
                 var lastPeerId = null;
                 var peer = null; // Own peer object
-                var peerId = null;
                 var conn = null;
-                var userId = document.getElementById("myId");
-                var message = document.getElementById("messageArea");
-                var sendMessBox = document.getElementById("sendMessageBox");
-                var sendButton = document.getElementById("sendButton");
-				var connectButton = document.getElementById("connectTo");
-				var recvIdInput = document.getElementById("peerId");
-				var logMess = document.getElementById("logMessage");
-				var conDiv = document.getElementById("peerDeets");
-				var myName = null;
-				var theirName = null;
-				var mediaConnection = null;
-				var fp = document.getElementById('fileProgress');
 				var receiveBuffer = [];
 				var receivedSize = 0;
 				var infilename;
 				var infilesize;
+				var openWins = 0;
 
 				
 
@@ -31,8 +19,7 @@
                  */
 					function getId (){
                     // Create own peer object with connection to shared PeerJS server
-					var nameBox = userId;
-					myName= nameBox.value;
+					var myName= document.getElementById("myId").value;
                     peer = new Peer(myName, {
                         debug: 2
                     });
@@ -40,8 +27,8 @@
 				
 					peer.on('error', function(err) { 
 					if(err.type =='unavailable-id'){
-					logMess.innerHTML="That username has already been taken. Please choose another: ";
-					nameBox.value = "";
+					document.getElementById("logMessage").textContent="That username has already been taken. Please choose another: ";
+					document.getElementById("myId").value = "";
 					}
 					});
 					
@@ -53,22 +40,21 @@
                         } else {
                             lastPeerId = peer.id;
                         }
-					logMess.innerHTML="Logged in as "+ myName+".";
+					document.getElementById("logMessage").textContent="Logged in as "+ peer.id+".";
 					document.getElementById("logInForm").style.display="none";
-					conDiv.style.display="block";
+					document.getElementById("peerDeets").style.display="block";
                     });
                     peer.on('connection', function (c) {
                         // Allow only a single connection
                         if (conn) {
                             c.on('open', function() {
-                                c.send("Already connected to another client");
+                                c.send({tag:"msg", data: "Already connected to another client"});
                                 setTimeout(function() { c.close(); }, 500);
                             });
                             return;
                         }
 
                         conn = c;
-						theirName = conn.peer;
 						showLogIns();
 						});
 					}
@@ -80,27 +66,33 @@
                     }
 
                     // Create connection to destination peer specified in the input field
-                    conn = peer.connect(recvIdInput.value, {
+                    conn = peer.connect(document.getElementById("peerId").value, {
                         reliable: true
                     });
 
                     conn.on('open', function () {
-					theirName = conn.peer;
 					showLogIns();		
                     });
                 };
 					
 					function showLogIns(){			
-                        logMess.innerHTML+=" Connected to "+theirName+".";
-						conDiv.style.display="none";
+                        document.getElementById("logMessage").textContent+=" Connected to "+conn.peer+".";
+						document.getElementById("peerDeets").style.display="none";
 						document.getElementById("sendarea").style.display="grid";
 						document.getElementById("burger").style.display="inline";	
 					
 					peer.on('call', function( mCon) {
+						switch(mCon.metadata){
+						case "vid":
 						mediaConnection=mCon;
-						answerCall(mCon)						
+						answerCall(mediaConnection)	
+						break;
+						case "scrn":
+						showScreen(mCon);
+						break;
+						};
+						
 					});
-					
 					ready();
 					}
 					
@@ -109,19 +101,19 @@
                     conn.on('data', function (obj) {
                         switch (obj.tag) {
 							case "fileinfo":
+								var fp = document.getElementById('fileProgress');
                                 infilename=obj.filename;
 								infilesize=obj.filesize;
 								fp.style.display="inline";
 								fp.value = 0;
 								fp.max = infilesize;
 								document.getElementById('fileText').textContent=`Receiving '${infilename}' (0/${infilesize} bytes)`;
-								infilemod=Date.now();
                                 break;
                              case "file":
 								receiveFile(obj.data)
-								break;
+								break;	
 							 case "msg":
-                                addMessage(theirName+": " + obj.data);
+                                addMessage(conn.peer+": " + obj.data);
                                 break;
                         };
                     });
@@ -129,12 +121,10 @@
                         status.innerHTML = "Connection reset<br>Awaiting connection...";
                         conn = null;
                     });
-					
-
-
                 }
 				
 			function addMessage(msg) {
+			var message = document.getElementById("messageArea");
 			var dv = document.createElement("div");
 			dv.appendChild(document.createTextNode(msg));
 			message.appendChild(dv);
@@ -143,10 +133,11 @@
 			
 			function sendIt(){
                     if (conn.open) {
-                        var msg = sendMessageBox.value;
-                        sendMessageBox.value = "";
+						var msgbox = document.getElementById("sendMessageBox");
+                        var msg = msgbox.value;
+                        msgbox.value = "";
                         conn.send({tag:"msg", data: msg});
-                        addMessage(myName+": " + msg);
+                        addMessage(peer.id+": " + msg);
                     }			
 			}
 			
@@ -160,7 +151,7 @@
 			document.getElementById("menu").onclick=function(e){
 			document.getElementById("mopener").checked=false;
 			switch (e.target.id){
-				case "screen":
+				case "menu_screen":
 				shareScreen();
 				break;
 				case "menu_vid":
@@ -171,66 +162,80 @@
 			
 			document.getElementById("logIn").addEventListener('click', getId);		
 			
-			connectButton.addEventListener('click', join);
+			document.getElementById("connectTo").addEventListener('click', join);
 
-			sendButton.addEventListener('click', sendIt);
+			document.getElementById("sendButton").addEventListener('click', sendIt);
 			
-			userId.addEventListener('keyup', function (e) {
+			document.getElementById("myId").addEventListener('keyup', function (e) {
 				pressEnter(e, getId)
 			});
 			
-			recvIdInput.addEventListener('keyup', function (e) {
+			document.getElementById("peerId").addEventListener('keyup', function (e) {
 				pressEnter(e, join)
 			});
 			
-			sendMessBox.addEventListener('keyup', function (e) {
+			document.getElementById("sendMessageBox").addEventListener('keyup', function (e) {
 				pressEnter(e, sendIt)
 			});
 
 			//start menu items
 			
-			//video sharing
+			// screen sharing
+			async function shareScreen() {
+				  let captureStream = null;
+
+				  try {
+					captureStream = await navigator.mediaDevices.getDisplayMedia();
+				  } catch(err) {
+					console.error("Error: " + err);
+				  }
+				  var screenConnection = peer.call(conn.peer, captureStream, {metadata:"scrn"});
+			}
+			
+			function showScreen(scrcon){
+				scrcon.answer();
+				makeWindow("vid", scrcon, "Screen shared by "+conn.peer);
+			}
+			
+			//video call
 			async function shareVideo() {
-			  let stream, vid = null;
+			  let stream = null;
 
 			  try {
 				stream = await navigator.mediaDevices.getUserMedia({ audio: true, video: true });
-				mediaConnection = peer.call(theirName, stream);
-				showVid();
+				stream.metadata="vid";
+				var mediaConnection = peer.call(conn.peer, stream, {metadata:"vid"});
+				showVid(mediaConnection);
 			  } catch(err) {
 				/* handle the error */
 			  }
 			}
 			
-			async function answerCall(media) {
-			  let stream, vid = null;
+			async function answerCall(vidCon) {
+			  let stream = null;
 			  try {
 				stream = await navigator.mediaDevices.getUserMedia({ audio: true, video: true });
-				media.answer(stream);
-				showVid();
+				vidCon.answer(stream);
+				showVid(vidCon);
 			  } catch(err) {
 				console.log(err)
 				/* handle the error */
 			  }
 			}
 			
-			function showVid(){
-				mediaConnection.on('stream', function(peerstream) {
-				document.getElementById("vid_wrapper").style.display="block";
-				let vid = document.getElementById("vid_canvas");
-				vid.srcObject = peerstream;
-				});
+			function showVid(vidcon){	
+				makeWindow("vid", vidcon, "Video Call with "+conn.peer);
 			}
 			
+			
+			//file sharing
 			document.getElementById("file_inp").onchange=function(){
+			  var fp = document.getElementById('fileProgress');
 			  fp.style.display="inline";
 			  const file = this.files[0];
 			  document.getElementById('fileText').textContent=`Sending '${file.name}' (0/${file.size} bytes)`;
 			  // Handle 0 size files.
-			  //statusMessage.textContent = '';
 			  if (file.size === 0) {
-				//bitrateDiv.innerHTML = '';
-				//statusMessage.textContent = 'File is empty, please select a non-empty file';
 				return;
 			  }
 			  fp.value=0;
@@ -261,6 +266,7 @@
 			}
 			
 			function receiveFile(data) {
+			var fp = document.getElementById('fileProgress');
 			  receiveBuffer.push(data);
 			  receivedSize += data.byteLength;
 			  fp.value = receivedSize;
@@ -275,11 +281,9 @@
 				lnk.appendChild(document.createTextNode(`Click to download '${infilename}' (${infilesize} bytes)`));
 				document.getElementById('fileText').textContent=`Received '${infilename}' (${infilesize} bytes)`;
 				dv.appendChild(lnk);
-				message.appendChild(dv);
+				document.getElementById("messageArea").appendChild(dv);
 				lnk.scrollIntoView(false);
 				fp.style.display="none";
 				receivedSize=0;
 			  }
 			}
-			
-		})();

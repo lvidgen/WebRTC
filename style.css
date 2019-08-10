@@ -71,9 +71,7 @@
 		cursor:pointer;
 		background-color:skyBlue;
 	}
-	#menu_screen{
-		display:none;
-	}
+
 	#mopener{
 	display:none;
 	}
@@ -82,27 +80,31 @@
 input:checked + #menu {
 display:block;
 	}
-	#vid_canvas{
-
+	
+	video{
+	width:100%;
+	height:auto;
 	}
+	
 	#fileProgress{
 		display:none;
 	}
 	.draggable {
-	display:none;
 	position: absolute;
+	width:33%;
+	height:auto;
 	top:0;
 	left:50%;
-	z-index: 9;
 	background-color: #f1f1f1;
 	text-align: center;
 	border: 1px solid #d3d3d3;
+	resize: both;
+	overflow:auto;
 	}
 
 	.dragheader {
 	padding: 10px;
 	cursor: move;
-	z-index: 10;
 	background-color: #2196F3;
 	color: #fff;
 	}
