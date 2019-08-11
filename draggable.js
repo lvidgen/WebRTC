@@ -2,11 +2,18 @@ function makeWindow(tag, vidcon, txt) {
 	var wrap = document.createElement("div");
 	wrap.className="draggable";
 	wrap.style.zIndex=++openWins;
+	var hdrwrap = document.createElement("div");
+	hdrwrap.className="hdwrp";
 	var hdr = document.createElement("div");
 	hdr.className="dragheader";
 	hdr.textContent=txt;
+	var clsr=document.createElement("div");
+	clsr.className="closer";
+	clsr.textContent="X";
 	var cont = null;
-	wrap.appendChild(hdr);
+	hdrwrap.appendChild(hdr);
+	hdrwrap.appendChild(clsr);
+	wrap.appendChild(hdrwrap);
 	wrap.onmousedown = function(e){
 		if(wrap.style.zIndex < openWins){
 			wrap.style.zIndex = ++openWins;
@@ -47,6 +54,12 @@ function makeWindow(tag, vidcon, txt) {
 			wrap.appendChild(cont);
 			document.body.appendChild(wrap);
 		});
+		clsr.onclick=function(){
+		let stream=cont.srcObject;
+		closeMediaConn(stream)
+		vidcon.close();
+		document.body.removeChild(wrap);
+		}
 		break;
 		case "pic":
 		cont = document.createElement("img");

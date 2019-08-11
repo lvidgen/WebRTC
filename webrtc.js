@@ -79,6 +79,7 @@
                         document.getElementById("logMessage").textContent+=" Connected to "+conn.peer+".";
 						document.getElementById("peerDeets").style.display="none";
 						document.getElementById("sendarea").style.display="grid";
+						document.getElementById("main").style.display="grid";
 						document.getElementById("burger").style.display="inline";	
 					
 					peer.on('call', function( mCon) {
@@ -190,6 +191,9 @@
 					console.error("Error: " + err);
 				  }
 				  var screenConnection = peer.call(conn.peer, captureStream, {metadata:"scrn"});
+				  screenConnection.on('close', function() { 
+				  closeMediaConn(captureStream);
+					});
 			}
 			
 			function showScreen(scrcon){
@@ -225,6 +229,11 @@
 			
 			function showVid(vidcon){	
 				makeWindow("vid", vidcon, "Video Call with "+conn.peer);
+			}
+			
+			function closeMediaConn(stream){
+			let tracks = stream.getTracks();
+			tracks.forEach(track => track.stop());
 			}
 			
 			

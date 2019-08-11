@@ -5,18 +5,28 @@
 	height:100%;
 	margin: 0;
 	padding: 0.5vh;
+	font-family:sans-serif;
 	}
 	#wrapper{
 	display: grid;
-    grid-template-rows: auto 1fr auto;
+    grid-template-rows: auto minmax(0, 1fr) auto;
     grid-template-columns: 100%;
 	height: 99vh;
+	}
+	#main{
+	display:none;
+	grid-template-columns: 80% 19%;
+	grid-gap:1%;
+		
 	}
 	#peerDeets{
 	display:none;
 	}
 	#messageArea{
 	overflow:auto;
+	border:.125vh solid;
+	padding:.5vh;
+	margin:.5vh;
 	}
 	#sendarea{
 	display: none;
@@ -77,8 +87,8 @@
 	}
 	
 	label,
-input:checked + #menu {
-display:block;
+	input:checked + #menu {
+	display:block;
 	}
 	
 	video{
@@ -89,12 +99,28 @@ display:block;
 	#fileProgress{
 		display:none;
 	}
+	
+	.hdwrp{
+	background-color: #2196F3;
+	display: flex;
+	margin-bottom:.25vh;	
+	}
+	.closer{
+	padding:1vh;
+	flex:1;
+	color:black;
+	}
+	.closer:hover{
+	background-color:red;
+	cursor:default;
+	color:white;
+	}
 	.draggable {
 	position: absolute;
 	width:33%;
 	height:auto;
 	top:0;
-	left:50%;
+	left:33%;
 	background-color: #f1f1f1;
 	text-align: center;
 	border: 1px solid #d3d3d3;
@@ -103,8 +129,8 @@ display:block;
 	}
 
 	.dragheader {
-	padding: 10px;
+	flex:9;
+	padding: 1vh;
 	cursor: move;
-	background-color: #2196F3;
 	color: #fff;
 	}
