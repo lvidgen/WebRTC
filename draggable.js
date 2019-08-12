@@ -2,18 +2,44 @@ function makeWindow(tag, vidcon, txt) {
 	var wrap = document.createElement("div");
 	wrap.className="draggable";
 	wrap.style.zIndex=++openWins;
+	document.body.appendChild(wrap);
 	var hdrwrap = document.createElement("div");
 	hdrwrap.className="hdwrp";
 	var hdr = document.createElement("div");
 	hdr.className="dragheader";
 	hdr.textContent=txt;
+	hdrwrap.appendChild(hdr);
+	wrap.appendChild(hdrwrap);
+	var cnfwrp=document.createElement("div");
+	var btn_y=document.createElement("button");
+	btn_y.appendChild(document.createTextNode("Accept"));
+	btn_y.className="conf_btn accept_stream";
+	cnfwrp.appendChild(btn_y);
+	var btn_n=document.createElement("button");
+	btn_n.appendChild(document.createTextNode("Reject"));
+	btn_n.className="conf_btn reject_stream";
+	cnfwrp.appendChild(btn_n);
+	wrap.appendChild(cnfwrp);
+	btn_n.onclick=function(){
+		switch(tag){
+			case "vid":
+		vidcon.answer();
+		vidcon.on('stream', function(peerstream) {
+			setTimeout(function(){
+			vidcon.close();
+			document.body.removeChild(wrap);
+			},0);
+		});
+			break;
+		}	
+	}
+	btn_y.onclick=function(){
+	wrap.removeChild(cnfwrp);
 	var clsr=document.createElement("div");
 	clsr.className="closer";
 	clsr.textContent="X";
 	var cont = null;
-	hdrwrap.appendChild(hdr);
 	hdrwrap.appendChild(clsr);
-	wrap.appendChild(hdrwrap);
 	wrap.onmousedown = function(e){
 		if(wrap.style.zIndex < openWins){
 			wrap.style.zIndex = ++openWins;
@@ -47,16 +73,18 @@ function makeWindow(tag, vidcon, txt) {
 
 	switch(tag){
 		case "vid":
-		cont = document.createElement("video");
-		cont.autoplay = true;
+		vidcon.answer();
 		vidcon.on('stream', function(peerstream) {
+			cont = document.createElement("video");
+			cont.autoplay = true;
+			hdr.textContent=vidcon.metadata=="scrn"?"screen shared from "+conn.peer:"call with "+conn.peer;
 			cont.srcObject = peerstream;
 			wrap.appendChild(cont);
-			document.body.appendChild(wrap);
 		});
+		wrap.style.resize="both";
 		clsr.onclick=function(){
 		let stream=cont.srcObject;
-		closeMediaConn(stream)
+		closeMediaConn(stream);
 		vidcon.close();
 		document.body.removeChild(wrap);
 		}
@@ -65,5 +93,7 @@ function makeWindow(tag, vidcon, txt) {
 		cont = document.createElement("img");
 		break;
 		}	
-
+	
+	}
+	
 	}

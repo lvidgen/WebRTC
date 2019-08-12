@@ -193,12 +193,12 @@
 				  var screenConnection = peer.call(conn.peer, captureStream, {metadata:"scrn"});
 				  screenConnection.on('close', function() { 
 				  closeMediaConn(captureStream);
-					});
+					});	
 			}
 			
 			function showScreen(scrcon){
-				scrcon.answer();
-				makeWindow("vid", scrcon, "Screen shared by "+conn.peer);
+				
+				makeWindow("vid", scrcon, conn.peer+" wants to share a screen with you");
 			}
 			
 			//video call
@@ -228,10 +228,11 @@
 			}
 			
 			function showVid(vidcon){	
-				makeWindow("vid", vidcon, "Video Call with "+conn.peer);
+				makeWindow("vid", vidcon, conn.peer+" wants to call you");
 			}
 			
 			function closeMediaConn(stream){
+				console.log(stream)
 			let tracks = stream.getTracks();
 			tracks.forEach(track => track.stop());
 			}

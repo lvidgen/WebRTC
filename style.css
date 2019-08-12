@@ -96,6 +96,11 @@
 	height:auto;
 	}
 	
+	.pic_cont{
+	width:100%;
+	height:auto;
+	}
+	
 	#fileProgress{
 		display:none;
 	}
@@ -117,14 +122,13 @@
 	}
 	.draggable {
 	position: absolute;
-	width:33%;
+	min-width:20%;
 	height:auto;
-	top:0;
-	left:33%;
+	top:30%;
+	left:40%;
 	background-color: #f1f1f1;
 	text-align: center;
 	border: 1px solid #d3d3d3;
-	resize: both;
 	overflow:auto;
 	}
 
@@ -133,4 +137,18 @@
 	padding: 1vh;
 	cursor: move;
 	color: #fff;
+	}
+	.conf_btn{
+	font-size:120%;
+	padding:1vh;
+	margin:1vh;
+	margin-bottom:2vh;
+	color:white;
+	}
+
+	.accept_stream{
+	background-color:#4CAF50;
+	}
+	.reject_stream{
+	background-color:red;
 	}
