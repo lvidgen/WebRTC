@@ -105,14 +105,16 @@
 								var fp = document.getElementById('fileProgress');
                                 infilename=obj.filename;
 								infilesize=obj.filesize;
-								fp.style.display="inline";
 								fp.value = 0;
 								fp.max = infilesize;
 								document.getElementById('fileText').textContent=`Receiving '${infilename}' (0/${infilesize} bytes)`;
                                 break;
                              case "file":
-								receiveFile(obj.data)
-								break;	
+								receiveFile(obj.data, true);
+								break;
+                             case "pic":
+								receiveFile(obj.data, false);
+								break;								
 							 case "msg":
                                 addMessage(conn.peer+": " + obj.data);
                                 break;
@@ -237,19 +239,35 @@
 			tracks.forEach(track => track.stop());
 			}
 			
+			document.getElementById("file_share").onchange=readFile;
+			document.getElementById("pic_share").onchange=readFile;
 			
-			//file sharing
-			document.getElementById("file_inp").onchange=function(){
-			  var fp = document.getElementById('fileProgress');
-			  fp.style.display="inline";
+			//get file from input
+			function readFile(){
 			  const file = this.files[0];
-			  document.getElementById('fileText').textContent=`Sending '${file.name}' (0/${file.size} bytes)`;
 			  // Handle 0 size files.
 			  if (file.size === 0) {
 				return;
 			  }
+			  var fp = document.getElementById('fileProgress');
+			  var ft = document.getElementById('fileText');
+			  var share = this.id == "file_share";
+			  //TODO: check for file type if showing pic
+
+			  //for sending files
+			  if (share){
+			  fp.style.display="inline";
+			  ft.style.display="inline";			  
+			  document.getElementById('fileText').textContent=`Sending '${file.name}' (0/${file.size} bytes)`;
 			  fp.value=0;
 			  fp.max = file.size;
+			  //end sending files
+			  } else {
+				if(file.type.indexOf("image")==-1){
+					makeWindow("info", "Selected file must be an image.", "Error");
+					return;
+				}  
+			  }
 			  conn.send({tag:"fileinfo", filename:file.name, filesize: file.size})
 			  const chunkSize = 16384;
 			  fileReader = new FileReader();
@@ -257,15 +275,22 @@
 			  fileReader.addEventListener('error', error => console.error('Error reading file:', error));
 			  fileReader.addEventListener('abort', event => console.log('File reading aborted:', event));
 			  fileReader.addEventListener('load', e => {
-				conn.send({tag:"file", data: e.target.result});
 				offset += e.target.result.byteLength;
+				if (share){
+				//sending files
+				conn.send({tag:"file", data: e.target.result});
 				document.getElementById('fileText').textContent=`Sending '${file.name}' (${offset}/${file.size} bytes)`;
 				fp.value = offset;
+				//end sending files
+				} else {
+				conn.send({tag:"pic", data: e.target.result});	
+				}
 				if (offset < file.size) {
 				  readSlice(offset);
 				} else {
 				document.getElementById('fileText').textContent=`Sent '${file.name}' (${file.size} bytes)`;
-				fp.style.display="none";				
+				fp.style.display="none";
+				ft.style.display="none";				
 				}
 			  });
 			  const readSlice = o => {
@@ -275,18 +300,28 @@
 			  readSlice(0);
 			}
 			
-			function receiveFile(data) {
+			function receiveFile(data, share) {
+			receiveBuffer.push(data);
+			receivedSize += data.byteLength;	
+			//start file sharing
+			if (share){
 			var fp = document.getElementById('fileProgress');
-			  receiveBuffer.push(data);
-			  receivedSize += data.byteLength;
+			var ft = document.getElementById('fileText');
+			  fp.style.display="inline";
+			  ft.style.display="inline";
 			  fp.value = receivedSize;
-			  document.getElementById('fileText').textContent=`Receiving '${infilename}' (${receivedSize}/${infilesize} bytes)`;
+			  ft.textContent=`Receiving '${infilename}' (${receivedSize}/${infilesize} bytes)`;
+			  //end file sharing
+			}
 			  if (receivedSize === infilesize) {
 				const received = new Blob(receiveBuffer);
 				receiveBuffer = [];
+				var obj= URL.createObjectURL(received);
+				if (share){
+				//start file sharing
 				var dv = document.createElement("div");
 				var lnk = document.createElement("a");
-				lnk.href = URL.createObjectURL(received);
+				lnk.href = obj;
 				lnk.download = infilename;
 				lnk.appendChild(document.createTextNode(`Click to download '${infilename}' (${infilesize} bytes)`));
 				document.getElementById('fileText').textContent=`Received '${infilename}' (${infilesize} bytes)`;
@@ -294,6 +329,12 @@
 				document.getElementById("messageArea").appendChild(dv);
 				lnk.scrollIntoView(false);
 				fp.style.display="none";
+				ft.style.display="none";
+				//end file sharing
+				} else {
+				makeWindow("pic", obj, conn.peer+" wants to share a photo with you");
+				}
+				
 				receivedSize=0;
 			  }
 			}

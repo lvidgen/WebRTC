@@ -23,6 +23,7 @@
 	display:none;
 	}
 	#messageArea{
+	font-size:90%;
 	overflow:auto;
 	border:.125vh solid;
 	padding:.5vh;
@@ -104,7 +105,9 @@
 	#fileProgress{
 		display:none;
 	}
-	
+	#fileText{
+		display:none;
+	}
 	.hdwrp{
 	background-color: #2196F3;
 	display: flex;

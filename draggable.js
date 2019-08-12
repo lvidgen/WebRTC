@@ -31,7 +31,17 @@ function makeWindow(tag, vidcon, txt) {
 			},0);
 		});
 			break;
+			case "pic":
+			document.body.removeChild(wrap);
+			break;
 		}	
+	}
+	if(tag=="info"){
+		var dv = document.createElement("div");
+		dv.appendChild(document.createTextNode(vidcon));
+		btn_y.textContent="OK";
+		wrap.lastChild.insertBefore(dv, btn_y);
+		cnfwrp.removeChild(btn_n);
 	}
 	btn_y.onclick=function(){
 	wrap.removeChild(cnfwrp);
@@ -91,6 +101,19 @@ function makeWindow(tag, vidcon, txt) {
 		break;
 		case "pic":
 		cont = document.createElement("img");
+		cont.src = vidcon;
+		cont.className="pic_cont";
+		wrap.style.resize="both";
+		wrap.appendChild(cont);
+		clsr.onclick=function(){
+		document.body.removeChild(wrap);
+		}
+		break;
+		case "err":
+		document.body.removeChild(wrap);
+		clsr.onclick=function(){
+		document.body.removeChild(wrap);
+		}
 		break;
 		}	
 	
