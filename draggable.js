@@ -20,41 +20,6 @@ function makeWindow(tag, vidcon, txt) {
 	btn_n.className="conf_btn reject_stream";
 	cnfwrp.appendChild(btn_n);
 	wrap.appendChild(cnfwrp);
-	btn_n.onclick=function(){
-		switch(tag){
-			case "vid":
-		vidcon.answer();
-		vidcon.on('stream', function(peerstream) {
-			setTimeout(function(){
-			vidcon.close();
-			document.body.removeChild(wrap);
-			},0);
-		});
-			break;
-			case "pic":
-			document.body.removeChild(wrap);
-			break;
-		}	
-	}
-	if(tag=="info"){
-		var dv = document.createElement("div");
-		dv.appendChild(document.createTextNode(vidcon));
-		btn_y.textContent="OK";
-		wrap.lastChild.insertBefore(dv, btn_y);
-		cnfwrp.removeChild(btn_n);
-	}
-	btn_y.onclick=function(){
-	wrap.removeChild(cnfwrp);
-	var clsr=document.createElement("div");
-	clsr.className="closer";
-	clsr.textContent="X";
-	var cont = null;
-	hdrwrap.appendChild(clsr);
-	wrap.onmousedown = function(e){
-		if(wrap.style.zIndex < openWins){
-			wrap.style.zIndex = ++openWins;
-		}
-	}
 	
 	hdr.onmousedown = function(e){
 	e = e || window.event;
@@ -80,30 +45,67 @@ function makeWindow(tag, vidcon, txt) {
     wrap.style.left = (wrap.offsetLeft - pos1) + "px";
 			}
 		}
+	
+	btn_n.onclick=function(){
+		switch(tag){
+			case "vid":
+		vidcon.answer();
+		vidcon.on('stream', function(peerstream) {
+			setTimeout(function(){
+			vidcon.close();
+			document.body.removeChild(wrap);
+			},0);
+		});
+			break;
+			case "pic":
+			document.body.removeChild(wrap);
+			break;
+		}	
+	}
+	if(tag=="info"){
+		var dv = document.createElement("div");
+		dv.appendChild(document.createTextNode(vidcon));
+		btn_y.textContent="OK";
+		wrap.lastChild.insertBefore(dv, btn_y);
+		cnfwrp.removeChild(btn_n);
+	}
+	btn_y.onclick=function(){
+	wrap.removeChild(cnfwrp);
+	wrap.style.resize="both";
+	var cont = null;
+	var clsr=makeCloser(hdrwrap);
+	wrap.onmousedown = function(e){
+		if(wrap.style.zIndex < openWins){
+			wrap.style.zIndex = ++openWins;
+		}
+	}
+	
+
 
 	switch(tag){
 		case "vid":
-		vidcon.answer();
-		vidcon.on('stream', function(peerstream) {
-			cont = document.createElement("video");
-			cont.autoplay = true;
-			hdr.textContent=vidcon.metadata=="scrn"?"screen shared from "+conn.peer:"call with "+conn.peer;
-			cont.srcObject = peerstream;
-			wrap.appendChild(cont);
-		});
-		wrap.style.resize="both";
-		clsr.onclick=function(){
-		let stream=cont.srcObject;
-		closeMediaConn(stream);
-		vidcon.close();
-		document.body.removeChild(wrap);
+		if(vidcon.metadata=="scrn"){
+			vidcon.answer();
+			hdr.textContent="screen shared from "+conn.peer;
+		} else {
+			hdr.textContent="call with "+conn.peer;
+		(async function() {
+			  let stream = null;
+			  try {
+				stream = await navigator.mediaDevices.getUserMedia({ audio: true, video: true });
+				vidcon.answer(stream);
+			  } catch(err) {
+				console.log(err)
+				/* handle the error */
+			  }
+			})();
 		}
+		makeVid(vidcon, clsr, wrap);
 		break;
 		case "pic":
 		cont = document.createElement("img");
 		cont.src = vidcon;
 		cont.className="pic_cont";
-		wrap.style.resize="both";
 		wrap.appendChild(cont);
 		clsr.onclick=function(){
 		document.body.removeChild(wrap);
@@ -115,8 +117,41 @@ function makeWindow(tag, vidcon, txt) {
 		document.body.removeChild(wrap);
 		}
 		break;
-		}	
-	
+		}		
 	}
 	
+	if(tag=="answered"){
+		wrap.removeChild(cnfwrp);
+		var clsr=makeCloser(hdrwrap);
+		makeVid(vidcon,clsr,wrap)
+		}
+	}
+	
+	function makeVid(con, cls, wrp){
+		var firstrun=true;
+		var cont=null;
+		con.on('stream', function(peerstream) {
+			if(firstrun){
+			cont = document.createElement("video");
+			cont.autoplay = true;
+			cont.srcObject = peerstream;
+			wrp.appendChild(cont);
+			firstrun=false;
+			}
+		});
+
+		cls.onclick=function(){
+		let stream=cont.srcObject;
+		closeMediaConn(stream);
+		con.close();
+		document.body.removeChild(wrp);
+		}
+	}
+	
+	function makeCloser(hwrap){
+	var clsr=document.createElement("div");
+	clsr.className="closer";
+	clsr.textContent="X";
+	hwrap.appendChild(clsr);
+	return clsr;
 	}

@@ -85,8 +85,7 @@
 					peer.on('call', function( mCon) {
 						switch(mCon.metadata){
 						case "vid":
-						mediaConnection=mCon;
-						answerCall(mediaConnection)	
+						makeWindow("vid", mCon, conn.peer+" wants to call you");	
 						break;
 						case "scrn":
 						showScreen(mCon);
@@ -158,7 +157,7 @@
 				shareScreen();
 				break;
 				case "menu_vid":
-				shareVideo();
+				videoCall();
 				break;
 			}
 			}
@@ -198,43 +197,31 @@
 					});	
 			}
 			
-			function showScreen(scrcon){
-				
+			function showScreen(scrcon){	
 				makeWindow("vid", scrcon, conn.peer+" wants to share a screen with you");
 			}
 			
 			//video call
-			async function shareVideo() {
+			async function videoCall() {
 			  let stream = null;
 
 			  try {
 				stream = await navigator.mediaDevices.getUserMedia({ audio: true, video: true });
-				stream.metadata="vid";
 				var mediaConnection = peer.call(conn.peer, stream, {metadata:"vid"});
-				showVid(mediaConnection);
+				makeWindow("answered", mediaConnection, "call with "+conn.peer);
+				mediaConnection.on('close', function() { 
+				  closeMediaConn(stream);
+					});
 			  } catch(err) {
-				/* handle the error */
-			  }
-			}
-			
-			async function answerCall(vidCon) {
-			  let stream = null;
-			  try {
-				stream = await navigator.mediaDevices.getUserMedia({ audio: true, video: true });
-				vidCon.answer(stream);
-				showVid(vidCon);
-			  } catch(err) {
-				console.log(err)
 				/* handle the error */
 			  }
 			}
 			
 			function showVid(vidcon){	
-				makeWindow("vid", vidcon, conn.peer+" wants to call you");
+				
 			}
 			
 			function closeMediaConn(stream){
-				console.log(stream)
 			let tracks = stream.getTracks();
 			tracks.forEach(track => track.stop());
 			}
