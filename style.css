@@ -1,163 +1,186 @@
-	* {
-	box-sizing: border-box;
-	}
-	body,html{
-	height:100%;
-	margin: 0;
-	padding: 0.5vh;
-	font-family:sans-serif;
-	}
-	#wrapper{
-	display: grid;
-    grid-template-rows: auto minmax(0, 1fr) auto;
-    grid-template-columns: 100%;
-	height: 99vh;
-	}
-	#main{
-	display:none;
-	grid-template-columns: 80% 19%;
-	grid-gap:1%;
-		
-	}
-	#peerDeets{
-	display:none;
-	}
-	#messageArea{
-	font-size:90%;
-	overflow:auto;
-	border:.125vh solid;
-	padding:.5vh;
-	margin:.5vh;
-	}
-	#sendarea{
-	display: none;
-	grid-template-columns: 80% 19%;
-	grid-gap:1%;
-	}
+ * {
+     box-sizing: border-box;
+ }
 
-	#sendButton{
-	background-color:DodgerBlue ;
-	height:100%;
-	width:100%;
-	cursor: pointer;
-	color: white;
-	font-weight:bold;
-	}
-	#sendMessageBox{
-	width:100%;
-	}
-	#burger{
-	width: 4vh;
-	height: auto;
-	cursor:pointer;
-	display:none;
-	}
-	#topbar{
-	display:grid;
-	grid-template-columns: 19% 80%;
-	grid-gap:1%;
-	
-	}
-	#infowrap{
-	text-align:right;
-	padding-right: 2px;
-	}
-	#menu{
-	position:absolute;
-	left:3vh;
-	margin-top:0px;
-	border:.1vh solid;
-	width:auto;
-	list-style:none;
-	padding-left:0vh;
-	display:none;
-	background-color:white;
-	}
-	.menuItem{
-	padding: 0.5vh 1vh 0.5vh 1vh;
-	border: .1vh solid;
-	}
-	.menuItem:hover{
-		color:white;
-		cursor:pointer;
-		background-color:skyBlue;
-	}
+ body,
+ html {
+     height: 100%;
+     margin: 0;
+     padding: 0.5vh;
+     font-family: sans-serif;
+ }
 
-	#mopener{
-	display:none;
-	}
-	
-	label,
-	input:checked + #menu {
-	display:block;
-	}
-	
-	video{
-	width:100%;
-	height:auto;
-	}
-	
-	.pic_cont{
-	width:100%;
-	height:auto;
-	}
-	
-	.pdf_cont{
-	width:100%;
-	height:90%;
-	}
-	
-	#fileProgress{
-		display:none;
-	}
-	#fileText{
-		display:none;
-	}
-	.hdwrp{
-	background-color: #2196F3;
-	display: flex;
-	margin-bottom:.25vh;	
-	}
-	.closer{
-	padding:1vh;
-	flex:1;
-	color:black;
-	}
-	.closer:hover{
-	background-color:red;
-	cursor:default;
-	color:white;
-	}
-	.draggable {
-	position: absolute;
-	min-width:20%;
-	height:auto;
-	top:10%;
-	left: 50%;
-	transform: translateX(-50%);
-	background-color: #f1f1f1;
-	text-align: center;
-	border: 1px solid #d3d3d3;
-	overflow:auto;
-	}
+ #wrapper {
+     display: grid;
+     grid-template-rows: auto minmax(0, 1fr) auto;
+     grid-template-columns: 100%;
+     height: 99vh;
+ }
 
-	.dragheader {
-	flex:9;
-	padding: 1vh;
-	cursor: move;
-	color: #fff;
-	}
-	.conf_btn{
-	font-size:120%;
-	padding:1vh;
-	margin:1vh;
-	margin-bottom:2vh;
-	color:white;
-	}
+ #main {
+     display: none;
+     grid-template-columns: 80% 19%;
+     grid-gap: 1%;
+ }
 
-	.accept_stream{
-	background-color:#4CAF50;
-	}
-	.reject_stream{
-	background-color:red;
-	}
+ #peerDeets {
+     display: none;
+ }
+
+ #messageArea {
+     font-size: 90%;
+     overflow: auto;
+     border: .125vh solid;
+     padding: .5vh;
+     margin: .5vh;
+ }
+
+ #sendarea {
+     display: none;
+     grid-template-columns: 80% 19%;
+     grid-gap: 1%;
+ }
+
+ #sendButton {
+     background-color: DodgerBlue;
+     height: 100%;
+     width: 100%;
+     cursor: pointer;
+     color: white;
+     font-weight: bold;
+ }
+
+ #sendMessageBox {
+     width: 100%;
+ }
+
+ #burger {
+     width: 4vh;
+     height: auto;
+     cursor: pointer;
+     display: none;
+ }
+
+ #topbar {
+     display: grid;
+     grid-template-columns: 19% 80%;
+     grid-gap: 1%;
+ }
+
+ #infowrap {
+     text-align: right;
+     padding-right: 2px;
+ }
+
+ #menu {
+     position: absolute;
+     left: 3vh;
+     margin-top: 0px;
+     border: .1vh solid;
+     width: auto;
+     list-style: none;
+     padding-left: 0vh;
+     display: none;
+     background-color: white;
+ }
+
+ .menuItem {
+     padding: 0.5vh 2vh 0.5vh 1vh;
+     border: .1vh solid;
+ }
+
+ .menuItem:hover {
+     color: white;
+     cursor: pointer;
+     background-color: skyBlue;
+ }
+
+ #mopener {
+     display: none;
+ }
+
+ label,
+ input:checked+#menu {
+     display: block;
+ }
+
+ video {
+     width: 100%;
+     height: auto;
+ }
+
+ .pic_cont {
+     width: 100%;
+     height: auto;
+ }
+
+ input[type="file"] {
+     display: none;
+ }
+
+ .pdf_cont {
+     width: 100%;
+     height: 90%;
+ }
+
+ #fileProgress {
+     display: none;
+ }
+
+ #fileText {
+     display: none;
+ }
+
+ .hdwrp {
+     background-color: #2196F3;
+     display: flex;
+     margin-bottom: .25vh;
+ }
+
+ .closer {
+     padding: 1vh;
+     flex: 1;
+     color: black;
+ }
+
+ .closer:hover {
+     background-color: red;
+     cursor: default;
+     color: white;
+ }
+
+ .draggable {
+     position: absolute;
+     min-width: 20%;
+     height: auto;
+     top: 10%;
+     left: 50%;
+     transform: translateX(-50%);
+     background-color: #f1f1f1;
+     text-align: center;
+     border: 1px solid #d3d3d3;
+     overflow: auto;
+ }
+
+ .dragheader {
+     flex: 9;
+     padding: 1vh;
+     cursor: move;
+     color: #fff;
+ }
+
+ .conf_btn {
+     font-size: 120%;
+     padding: 1vh;
+     margin: 1vh;
+     margin-bottom: 2vh;
+     color: white;
+ }
+
+ .accept_stream {
+     background-color: #4CAF50;
+ }
+
+ .reject_stream {
+     background-color: red;
+ }
