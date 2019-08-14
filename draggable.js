@@ -84,29 +84,43 @@ function makeWindow(tag, vidcon, txt) {
 
         switch (tag) {
             case "vid":
+				makeVid(vidcon, clsr, wrap);
                 if (vidcon.metadata == "scrn") {
                     vidcon.answer();
                     hdr.textContent = "screen shared from " + conn.peer;
+					vidcon.once('close', function() {
+					document.body.removeChild(wrap);
+                    });
                 } else {
                     hdr.textContent = "call with " + conn.peer;
                     (async function() {
                         let stream = null;
+						if(hasmic||hascam){
                         try {
                             stream = await navigator.mediaDevices.getUserMedia({
-                                audio: true,
-                                video: true
+                                audio: hasmic,
+                                video: hascam
                             });
+							
                             vidcon.answer(stream);
                             vidcon.once('close', function() {
-                                closeMediaConn(stream, wrap);
+                                closeMediaConn(stream);
+								document.body.removeChild(wrap);
                             });
+
                         } catch (err) {
                             console.log(err)
                             /* handle the error */
                         }
+						} else {
+							vidcon.answer();
+                            vidcon.once('close', function() {
+								document.body.removeChild(wrap);
+                            });
+							}
                     })();
                 }
-                makeVid(vidcon, clsr, wrap);
+                
                 break;
             case "photo":
                 hdr.textContent = "photo shared by " + conn.peer;
@@ -139,7 +153,7 @@ function makeWindow(tag, vidcon, txt) {
         wrap.removeChild(cnfwrp);
         var clsr = makeCloser(hdrwrap);
         makeVid(vidcon, clsr, wrap, hdr);
-        return wrap;
+		return wrap;
     }
 }
 
@@ -154,9 +168,8 @@ function makeVid(con, cls, wrp, hdr) {
         cont.srcObject = peerstream;
         wrp.appendChild(cont);
     });
-
     cls.onclick = function() {
-        con.close();
+		con.close();
     }
 }
 

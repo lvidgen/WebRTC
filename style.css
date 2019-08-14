@@ -84,6 +84,10 @@
      background-color: white;
  }
 
+#menu_vid {
+     display: none;
+ }
+ 
  .menuItem {
      padding: 0.5vh 2vh 0.5vh 1vh;
      border: .1vh solid;

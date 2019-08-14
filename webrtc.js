@@ -7,6 +7,26 @@ var receivedSize = 0;
 var infilename;
 var infilesize;
 var openWins = 0;
+var hascam = false;
+var hasmic = false;
+
+
+navigator.mediaDevices.enumerateDevices()
+.then(function(devices) {
+  devices.forEach(function(device) {
+    if(device.kind == "videoinput"){
+		hascam=true;
+		document.getElementById("menu_vid").style.display="list-item";
+	};
+	if(device.kind == "audioinput"){
+		hasmic=true;
+	};
+  });
+})
+.catch(function(err) {
+  console.log(err.name + ": " + err.message);
+});
+
 
 /**
  * Create the Peer object for our end of the connection.
@@ -210,29 +230,25 @@ async function videoCall() {
     let stream = null;
     try {
         stream = await navigator.mediaDevices.getUserMedia({
-            audio: true,
-            video: true
+            audio: hasmic,
+            video: hascam
         });
         var mediaConnection = peer.call(conn.peer, stream, {
             metadata: "vid"
         });
-        var win = makeWindow("calling", mediaConnection, "calling " + conn.peer + "...");
+        var wrap = makeWindow("calling", mediaConnection, "calling " + conn.peer + "...");
         mediaConnection.once('close', function() {
-            closeMediaConn(stream, win);
+			document.body.removeChild(wrap);
+            closeMediaConn(stream);
         });
     } catch (err) {
         /* handle the error */
     }
 }
 
-function closeMediaConn(stream, wrp) {
+function closeMediaConn(stream) {
     let tracks = stream.getTracks();
     tracks.forEach(track => track.stop());
-    if (wrp) {
-        var cont = wrp.getElementsByTagName("video")[0];
-        cont.srcObject = null;
-        document.body.removeChild(wrp);
-    }
 }
 
 document.getElementById("file_share").onchange = readFile;
