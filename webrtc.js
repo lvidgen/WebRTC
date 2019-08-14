@@ -8,8 +8,6 @@ var infilename;
 var infilesize;
 var openWins = 0;
 
-
-
 /**
  * Create the Peer object for our end of the connection.
  *
@@ -22,7 +20,6 @@ function getId() {
     peer = new Peer(myName, {
         debug: 2
     });
-
 
     peer.on('error', function(err) {
         if (err.type == 'unavailable-id') {
@@ -43,6 +40,7 @@ function getId() {
         document.getElementById("logInForm").style.display = "none";
         document.getElementById("peerDeets").style.display = "block";
     });
+	
     peer.on('connection', function(c) {
         // Allow only a single connection
         if (conn) {
@@ -57,7 +55,6 @@ function getId() {
             });
             return;
         }
-
         conn = c;
         showLogIns();
     });
@@ -68,7 +65,6 @@ function join() {
     if (conn) {
         conn.close();
     }
-
     // Create connection to destination peer specified in the input field
     conn = peer.connect(document.getElementById("peerId").value, {
         reliable: true
@@ -95,11 +91,9 @@ function showLogIns() {
                 showScreen(mCon);
                 break;
         };
-
     });
     ready();
 }
-
 
 function ready() {
     conn.on('data', function(obj) {
@@ -159,7 +153,6 @@ function pressEnter(e, func) {
     }
 }
 
-
 document.getElementById("menu").onclick = function(e) {
     document.getElementById("mopener").checked = false;
     switch (e.target.id) {
@@ -195,7 +188,6 @@ document.getElementById("sendMessageBox").addEventListener('keyup', function(e) 
 // screen sharing
 async function shareScreen() {
     let captureStream = null;
-
     try {
         captureStream = await navigator.mediaDevices.getDisplayMedia();
     } catch (err) {
@@ -216,7 +208,6 @@ function showScreen(scrcon) {
 //video call
 async function videoCall() {
     let stream = null;
-
     try {
         stream = await navigator.mediaDevices.getUserMedia({
             audio: true,
@@ -245,30 +236,26 @@ function closeMediaConn(stream, wrp) {
 }
 
 document.getElementById("file_share").onchange = readFile;
-document.getElementById("pic_share").onchange = readFile;
-document.getElementById("pdf_share").onchange = readFile;
+document.getElementById("pic_show").onchange = readFile;
+document.getElementById("pdf_show").onchange = readFile;
 
 //get file from input
 function readFile() {
     const file = this.files[0];
-    // Handle 0 size files.
     if (file.size === 0) {
         return;
     }
     var fp = document.getElementById('fileProgress');
     var ft = document.getElementById('fileText');
     var theid = this.id;
-    var share = theid == "file_share";
-    //TODO: check for file type if showing pic
+    var share = theid == "file_share"; //for sending files
 
-    //for sending files
     if (share) {
         fp.style.display = "inline";
         ft.style.display = "inline";
         document.getElementById('fileText').textContent = `Sending '${file.name}' (0/${file.size} bytes)`;
         fp.value = 0;
         fp.max = file.size;
-        //end sending files
     } else {
         if (file.type.indexOf("image") == -1 && theid == "pic_share") {
             makeWindow("info", "Selected file must be an image.", "Error");
@@ -292,14 +279,12 @@ function readFile() {
     fileReader.addEventListener('load', e => {
         offset += e.target.result.byteLength;
         if (share) {
-            //sending files
             conn.send({
                 tag: "file",
                 data: e.target.result
             });
             document.getElementById('fileText').textContent = `Sending '${file.name}' (${offset}/${file.size} bytes)`;
             fp.value = offset;
-            //end sending files
         } else {
             conn.send({
                 tag: theid,
@@ -324,7 +309,6 @@ function readFile() {
 function receiveFile(data, typ) {
     receiveBuffer.push(data);
     receivedSize += data.byteLength;
-    //start file sharing
     var share = typ == "file";
     if (share) {
         var fp = document.getElementById('fileProgress');
@@ -333,14 +317,11 @@ function receiveFile(data, typ) {
         ft.style.display = "inline";
         fp.value = receivedSize;
         ft.textContent = `Receiving '${infilename}' (${receivedSize}/${infilesize} bytes)`;
-        //end file sharing
     }
     if (receivedSize === infilesize) {
         const received = new Blob(receiveBuffer);
-
         var obj = URL.createObjectURL(received);
         if (share) {
-            //start file sharing
             var dv = document.createElement("div");
             var lnk = document.createElement("a");
             lnk.href = obj;
@@ -352,7 +333,6 @@ function receiveFile(data, typ) {
             lnk.scrollIntoView(false);
             fp.style.display = "none";
             ft.style.display = "none";
-            //end file sharing
         } else {
             switch (typ) {
                 case "photo":
@@ -362,7 +342,6 @@ function receiveFile(data, typ) {
                     makeWindow(typ, obj, conn.peer + " wants to share a " + typ + " with you");
                     break;
             }
-
         }
         receiveBuffer = [];
         receivedSize = 0;

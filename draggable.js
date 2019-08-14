@@ -82,8 +82,6 @@ function makeWindow(tag, vidcon, txt) {
             }
         }
 
-
-
         switch (tag) {
             case "vid":
                 if (vidcon.metadata == "scrn") {

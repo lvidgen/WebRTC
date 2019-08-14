@@ -1,13 +1,11 @@
  <!DOCTYPE html>
  <html>
-
  <head>
      <meta charset="UTF-8">
      <meta name="viewport" content="width=device-width, initial-scale=1.0">
-     <title>title</title>
+     <title>WebRTC</title>
      <link href="style.css" rel="stylesheet">
  </head>
-
  <body>
      <div id="wrapper">
          <div id="topbar">
@@ -20,13 +18,12 @@
                      <li class="menuItem" id="menu_vid">Video call</li>
                      <li class="menuItem" id="menu_file"><label for="file_share">Share file </label><input id="file_share" type="file"></li>
                      <li class="menuItem" id="menu_screen">Share screen</li>
-                     <li class="menuItem" id="menu_pic"><label for="pic_share">Show photo </label><input id="pic_share" type="file"></li>
-                     <li class="menuItem" id="menu_pdf"><label for="pdf_share">Show pdf </label><input id="pdf_share" type="file"></li>
+                     <li class="menuItem" id="menu_pic"><label for="pic_show">Show photo </label><input id="pic_show" type="file"></li>
+                     <li class="menuItem" id="menu_pdf"><label for="pdf_show">Show pdf </label><input id="pdf_show" type="file"></li>
                  </ul>
              </div>
              <div id="infowrap">
                  <div id="logMessage">Welcome! Please choose a username to log in: </div>
-
                  <span id="logInForm">
                      <input id="myId"><button id="logIn">Submit</button>
                  </span>
@@ -50,10 +47,8 @@
              </div>
          </div>
      </div>
-
      <script src="https://cdn.jsdelivr.net/npm/peerjs@0.3.20/dist/peer.min.js"></script>
      <script src="webrtc.js"></script>
      <script src="draggable.js"></script>
  </body>
-
  </html>
