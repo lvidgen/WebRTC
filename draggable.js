@@ -94,6 +94,9 @@ function makeWindow(tag, vidcon, txt) {
 			  try {
 				stream = await navigator.mediaDevices.getUserMedia({ audio: true, video: true });
 				vidcon.answer(stream);
+				vidcon.once('close', function() { 
+				  closeMediaConn(stream, wrap);
+					});
 			  } catch(err) {
 				console.log(err)
 				/* handle the error */
@@ -102,10 +105,22 @@ function makeWindow(tag, vidcon, txt) {
 		}
 		makeVid(vidcon, clsr, wrap);
 		break;
-		case "pic":
+		case "photo":
+		hdr.textContent="photo shared by "+conn.peer;
 		cont = document.createElement("img");
 		cont.src = vidcon;
 		cont.className="pic_cont";
+		wrap.appendChild(cont);
+		clsr.onclick=function(){
+		document.body.removeChild(wrap);
+		}
+		break;
+		case "pdf":
+		hdr.textContent="pdf shared by "+conn.peer;
+		cont = document.createElement("iframe");
+		cont.sandbox="allow-scripts";
+		cont.src = vidcon;
+		cont.className="pdf_cont";
 		wrap.appendChild(cont);
 		clsr.onclick=function(){
 		document.body.removeChild(wrap);
@@ -120,31 +135,28 @@ function makeWindow(tag, vidcon, txt) {
 		}		
 	}
 	
-	if(tag=="answered"){
+	if(tag=="calling"){
 		wrap.removeChild(cnfwrp);
 		var clsr=makeCloser(hdrwrap);
-		makeVid(vidcon,clsr,wrap)
+		makeVid(vidcon,clsr,wrap, hdr);
+		return wrap;
 		}
 	}
 	
-	function makeVid(con, cls, wrp){
-		var firstrun=true;
+	function makeVid(con, cls, wrp, hdr){
 		var cont=null;
-		con.on('stream', function(peerstream) {
-			if(firstrun){
+		con.once('stream', function(peerstream) {
+			if(hdr){
+				hdr.textContent="call with "+conn.peer;
+			}
 			cont = document.createElement("video");
 			cont.autoplay = true;
 			cont.srcObject = peerstream;
 			wrp.appendChild(cont);
-			firstrun=false;
-			}
 		});
 
 		cls.onclick=function(){
-		let stream=cont.srcObject;
-		closeMediaConn(stream);
 		con.close();
-		document.body.removeChild(wrp);
 		}
 	}
 	

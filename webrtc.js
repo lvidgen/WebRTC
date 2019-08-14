@@ -109,12 +109,15 @@
 								document.getElementById('fileText').textContent=`Receiving '${infilename}' (0/${infilesize} bytes)`;
                                 break;
                              case "file":
-								receiveFile(obj.data, true);
+								receiveFile(obj.data, "file");
 								break;
-                             case "pic":
-								receiveFile(obj.data, false);
+                             case "pic_share":
+								receiveFile(obj.data, "photo");
 								break;								
-							 case "msg":
+                             case "pdf_share":
+								receiveFile(obj.data, "pdf");
+								break;							 
+								case "msg":
                                 addMessage(conn.peer+": " + obj.data);
                                 break;
                         };
@@ -208,26 +211,28 @@
 			  try {
 				stream = await navigator.mediaDevices.getUserMedia({ audio: true, video: true });
 				var mediaConnection = peer.call(conn.peer, stream, {metadata:"vid"});
-				makeWindow("answered", mediaConnection, "call with "+conn.peer);
-				mediaConnection.on('close', function() { 
-				  closeMediaConn(stream);
+				var win = makeWindow("calling", mediaConnection, "calling "+conn.peer+"...");
+				mediaConnection.once('close', function() { 
+				  closeMediaConn(stream, win);
 					});
 			  } catch(err) {
 				/* handle the error */
 			  }
 			}
 			
-			function showVid(vidcon){	
-				
-			}
-			
-			function closeMediaConn(stream){
+			function closeMediaConn(stream, wrp){
 			let tracks = stream.getTracks();
 			tracks.forEach(track => track.stop());
+			if(wrp){
+			var cont = wrp.getElementsByTagName("video")[0];
+			cont.srcObject=null;
+			document.body.removeChild(wrp);
+				}
 			}
 			
 			document.getElementById("file_share").onchange=readFile;
 			document.getElementById("pic_share").onchange=readFile;
+			document.getElementById("pdf_share").onchange=readFile;
 			
 			//get file from input
 			function readFile(){
@@ -238,7 +243,8 @@
 			  }
 			  var fp = document.getElementById('fileProgress');
 			  var ft = document.getElementById('fileText');
-			  var share = this.id == "file_share";
+			  var theid = this.id;
+			  var share = theid == "file_share";
 			  //TODO: check for file type if showing pic
 
 			  //for sending files
@@ -250,10 +256,14 @@
 			  fp.max = file.size;
 			  //end sending files
 			  } else {
-				if(file.type.indexOf("image")==-1){
+				if(file.type.indexOf("image")==-1 && theid=="pic_share"){
 					makeWindow("info", "Selected file must be an image.", "Error");
 					return;
-				}  
+				}
+				if(file.name.indexOf(".pdf")==-1 && theid=="pdf_share"){
+					makeWindow("info", "Selected file must be a pdf file.", "Error");
+					return;
+				}	
 			  }
 			  conn.send({tag:"fileinfo", filename:file.name, filesize: file.size})
 			  const chunkSize = 16384;
@@ -270,7 +280,7 @@
 				fp.value = offset;
 				//end sending files
 				} else {
-				conn.send({tag:"pic", data: e.target.result});	
+				conn.send({tag: theid, data: e.target.result});	
 				}
 				if (offset < file.size) {
 				  readSlice(offset);
@@ -287,10 +297,11 @@
 			  readSlice(0);
 			}
 			
-			function receiveFile(data, share) {
+			function receiveFile(data, typ) {
 			receiveBuffer.push(data);
 			receivedSize += data.byteLength;	
 			//start file sharing
+			var share = typ =="file";
 			if (share){
 			var fp = document.getElementById('fileProgress');
 			var ft = document.getElementById('fileText');
@@ -302,7 +313,7 @@
 			}
 			  if (receivedSize === infilesize) {
 				const received = new Blob(receiveBuffer);
-				receiveBuffer = [];
+				
 				var obj= URL.createObjectURL(received);
 				if (share){
 				//start file sharing
@@ -319,9 +330,17 @@
 				ft.style.display="none";
 				//end file sharing
 				} else {
-				makeWindow("pic", obj, conn.peer+" wants to share a photo with you");
+					switch(typ){
+					case "photo":
+					makeWindow(typ, obj, conn.peer+" wants to share a "+typ+" with you");
+						break;
+					case "pdf":
+					makeWindow(typ, obj, conn.peer+" wants to share a "+typ+" with you");
+						break;
+					}
+
 				}
-				
+				receiveBuffer = [];
 				receivedSize=0;
 			  }
 			}
