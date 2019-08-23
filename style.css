@@ -12,7 +12,7 @@
 
  #wrapper {
      display: grid;
-     grid-template-rows: auto minmax(0, 1fr) auto;
+     grid-template-rows: auto minmax(0, 1fr);
      grid-template-columns: 100%;
      height: 99vh;
  }
@@ -22,36 +22,16 @@
      grid-template-columns: 80% 19%;
      grid-gap: 1%;
  }
+ 
+ @media screen and (max-width: 600px) {
+	 #main {
+		 display: none;
+		 grid-template-columns: 0% 100%;
+	 }	 
+ }	 
 
  #peerDeets {
      display: none;
- }
-
- #messageArea {
-     font-size: 90%;
-     overflow: auto;
-     border: .125vh solid;
-     padding: .5vh;
-     margin: .5vh;
- }
-
- #sendarea {
-     display: none;
-     grid-template-columns: 80% 19%;
-     grid-gap: 1%;
- }
-
- #sendButton {
-     background-color: DodgerBlue;
-     height: 100%;
-     width: 100%;
-     cursor: pointer;
-     color: white;
-     font-weight: bold;
- }
-
- #sendMessageBox {
-     width: 100%;
  }
 
  #burger {
@@ -118,6 +98,7 @@
      height: auto;
  }
 
+
  input[type="file"] {
      display: none;
  }
@@ -171,6 +152,49 @@
      padding: 1vh;
      cursor: move;
      color: #fff;
+ }
+
+ #msgwrap {
+     display: none;
+     grid-template-rows: auto minmax(0, 1fr) auto;
+	 position: absolute;
+	 right:1vw;
+     border: .125vh solid;
+     width: 20%;
+     height: 88%;
+     top: 10%;
+     background-color: #f1f1f1;
+     overflow: auto;
+	 resize: both; 
+ }
+ 
+#msghdwrp {
+     background-color: #2196F3;
+     margin-bottom: .25vh;
+ }
+ 
+#msgdraghead {
+     padding: 1vh;
+     cursor: move;
+     color: #fff;
+	 text-align: center;
+ }
+ 
+ #messageArea {
+     font-size: 90%;
+     overflow: auto;
+     padding: .5vh;
+     margin: .5vh;
+ }
+
+ #sendarea {
+     display: none;
+     grid-template-columns: 80% 19%;
+     grid-gap: 1%;
+ }
+
+ #sendMessageBox {
+     width: 100%;
  }
 
  .conf_btn {

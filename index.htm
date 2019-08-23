@@ -36,17 +36,15 @@
          </div>
          <div id="main">
              <div id="playArea"></div>
-             <div id="messageArea"></div>
-         </div>
-         <div id="sendarea">
-             <div id="leftcol">
-                 <textarea id="sendMessageBox"></textarea>
-             </div>
-             <div id="rightcol">
-                 <button id="sendButton">Send</button>
-             </div>
-         </div>
-     </div>
+		<div id="msgwrap">
+			<div id="msghdwrp">
+			<div id="msgdraghead">Chat box</div>
+			</div>
+			<div id="messageArea"></div>
+            <textarea id="sendMessageBox" placeholder="Send a message"></textarea>
+		</div>			 
+         </div>	
+
      <script src="https://cdn.jsdelivr.net/npm/peerjs@0.3.20/dist/peer.min.js"></script>
      <script src="webrtc.js"></script>
      <script src="draggable.js"></script>

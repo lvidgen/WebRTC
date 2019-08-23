@@ -1,14 +1,15 @@
 document.getElementById("mopener").checked = false;
-var lastPeerId = null;
-var peer = null; // Own peer object
-var conn = null;
-var receiveBuffer = [];
-var receivedSize = 0;
-var infilename;
-var infilesize;
-var openWins = 0;
-var hascam = false;
-var hasmic = false;
+
+var lastPeerId = null,
+	peer = null, // Own peer object
+	conn = null,
+	receiveBuffer = [],
+	receivedSize = 0,
+	infilename,
+	infilesize,
+	openWins = 0,
+	hascam = false,
+	hasmic = false;
 
 
 navigator.mediaDevices.enumerateDevices()
@@ -26,6 +27,8 @@ navigator.mediaDevices.enumerateDevices()
 .catch(function(err) {
   console.log(err.name + ": " + err.message);
 });
+
+
 
 
 /**
@@ -98,17 +101,18 @@ function join() {
 function showLogIns() {
     document.getElementById("logMessage").textContent += " Connected to " + conn.peer + ".";
     document.getElementById("peerDeets").style.display = "none";
-    document.getElementById("sendarea").style.display = "grid";
+    document.getElementById("msgwrap").style.display = "grid";
     document.getElementById("main").style.display = "grid";
     document.getElementById("burger").style.display = "inline";
-
+	document.getElementById("msgdraghead").textContent = "Chat with " + conn.peer;
+	makeDraggable(document.getElementById("msghdwrp"))
     peer.on('call', function(mCon) {
         switch (mCon.metadata) {
             case "vid":
                 makeWindow("vid", mCon, conn.peer + " wants to call you");
                 break;
             case "scrn":
-                showScreen(mCon);
+                makeWindow("vid", mCon, conn.peer + " wants to share a screen with you");
                 break;
         };
     });
@@ -129,10 +133,10 @@ function ready() {
             case "file":
                 receiveFile(obj.data, "file");
                 break;
-            case "pic_share":
+            case "pic_show":
                 receiveFile(obj.data, "photo");
                 break;
-            case "pdf_share":
+            case "pdf_show":
                 receiveFile(obj.data, "pdf");
                 break;
             case "msg":
@@ -147,8 +151,8 @@ function ready() {
 }
 
 function addMessage(msg) {
-    var message = document.getElementById("messageArea");
-    var dv = document.createElement("div");
+    var message = document.getElementById("messageArea"),
+		dv = document.createElement("div");
     dv.appendChild(document.createTextNode(msg));
     message.appendChild(dv);
     dv.scrollIntoView(false);
@@ -156,8 +160,8 @@ function addMessage(msg) {
 
 function sendIt() {
     if (conn.open) {
-        var msgbox = document.getElementById("sendMessageBox");
-        var msg = msgbox.value;
+        var msgbox = document.getElementById("sendMessageBox"),
+			msg = msgbox.value;
         msgbox.value = "";
         conn.send({
             tag: "msg",
@@ -189,7 +193,7 @@ document.getElementById("logIn").addEventListener('click', getId);
 
 document.getElementById("connectTo").addEventListener('click', join);
 
-document.getElementById("sendButton").addEventListener('click', sendIt);
+//document.getElementById("sendButton").addEventListener('click', sendIt);
 
 document.getElementById("myId").addEventListener('keyup', function(e) {
     pressEnter(e, getId)
@@ -219,10 +223,6 @@ async function shareScreen() {
     screenConnection.on('close', function() {
         closeMediaConn(captureStream);
     });
-}
-
-function showScreen(scrcon) {
-    makeWindow("vid", scrcon, conn.peer + " wants to share a screen with you");
 }
 
 //video call
@@ -257,15 +257,18 @@ document.getElementById("pdf_show").onchange = readFile;
 
 //get file from input
 function readFile() {
-    const file = this.files[0];
+    var fp = document.getElementById('fileProgress'),
+		ft = document.getElementById('fileText'),
+		theid = this.id,
+		share = theid == "file_share", //for sending files
+		chunkSize = 16384;
+		fileReader = new FileReader();
+		offset = 0,
+		file = this.files[0];
+		this.value="";
     if (file.size === 0) {
         return;
     }
-    var fp = document.getElementById('fileProgress');
-    var ft = document.getElementById('fileText');
-    var theid = this.id;
-    var share = theid == "file_share"; //for sending files
-
     if (share) {
         fp.style.display = "inline";
         ft.style.display = "inline";
@@ -273,11 +276,11 @@ function readFile() {
         fp.value = 0;
         fp.max = file.size;
     } else {
-        if (file.type.indexOf("image") == -1 && theid == "pic_share") {
+        if (file.type.indexOf("image") == -1 && theid == "pic_show") {
             makeWindow("info", "Selected file must be an image.", "Error");
             return;
         }
-        if (file.name.indexOf(".pdf") == -1 && theid == "pdf_share") {
+        if (file.name.indexOf(".pdf") == -1 && theid == "pdf_show") {
             makeWindow("info", "Selected file must be a pdf file.", "Error");
             return;
         }
@@ -287,9 +290,7 @@ function readFile() {
         filename: file.name,
         filesize: file.size
     })
-    const chunkSize = 16384;
-    fileReader = new FileReader();
-    let offset = 0;
+
     fileReader.addEventListener('error', error => console.error('Error reading file:', error));
     fileReader.addEventListener('abort', event => console.log('File reading aborted:', event));
     fileReader.addEventListener('load', e => {
@@ -327,8 +328,8 @@ function receiveFile(data, typ) {
     receivedSize += data.byteLength;
     var share = typ == "file";
     if (share) {
-        var fp = document.getElementById('fileProgress');
-        var ft = document.getElementById('fileText');
+        var fp = document.getElementById('fileProgress'),
+			ft = document.getElementById('fileText');
         fp.style.display = "inline";
         ft.style.display = "inline";
         fp.value = receivedSize;
@@ -338,8 +339,8 @@ function receiveFile(data, typ) {
         const received = new Blob(receiveBuffer);
         var obj = URL.createObjectURL(received);
         if (share) {
-            var dv = document.createElement("div");
-            var lnk = document.createElement("a");
+            var dv = document.createElement("div"),
+				lnk = document.createElement("a");
             lnk.href = obj;
             lnk.download = infilename;
             lnk.appendChild(document.createTextNode(`Click to download '${infilename}' (${infilesize} bytes)`));
@@ -351,6 +352,7 @@ function receiveFile(data, typ) {
             ft.style.display = "none";
         } else {
             switch (typ) {
+				
                 case "photo":
                     makeWindow(typ, obj, conn.peer + " wants to share a " + typ + " with you");
                     break;
