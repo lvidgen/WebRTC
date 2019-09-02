@@ -9,17 +9,20 @@
  <body>
      <div id="wrapper">
          <div id="topbar">
-             <div>
+             <div id="menuwrapper">
+			 <!--hamburger menu holder-->
                  <label for="mopener">
                      <img id="burger" src="images/menu.png">
                  </label>
                  <input type="checkbox" id="mopener" autocomplete="off">
+			 <!--end hamburger menu holder-->
                  <ul id="menu">
                      <li class="menuItem" id="menu_vid">Video call</li>
                      <li class="menuItem" id="menu_file"><label for="file_share">Share file </label><input id="file_share" type="file"></li>
                      <li class="menuItem" id="menu_screen">Share screen</li>
                      <li class="menuItem" id="menu_pic"><label for="pic_show">Show photo </label><input id="pic_show" type="file"></li>
                      <li class="menuItem" id="menu_pdf"><label for="pdf_show">Show pdf </label><input id="pdf_show" type="file"></li>
+					 <li class="menuItem" id="menu_draw">Show drawing tools</li>
                  </ul>
              </div>
              <div id="infowrap">
@@ -28,16 +31,96 @@
                      <input id="myId"><button id="logIn">Submit</button>
                  </span>
                  <div id="peerDeets">Enter your friend's ID here: <input id="peerId"> and click here: <button id="connectTo">Connect</button> or wait for a connection</div>
-                 <div id="fileInfo">
-                     <span id="fileText"></span>
-                     <progress id="fileProgress" max="0" value="0"></progress>
-                 </div>
-             </div>
+				<div id="conninfo"></div>	
+			 </div>
          </div>
          <div id="main">
-             <div id="playArea"></div>
+             <div id="playArea">
+			<!--start drawing stuff--> 
+	
+<div id="cnv_btns" class="invisible">
+    <button id="free_btn">Freehand</button>
+    <button id="line_btn">Line</button>
+    <button id="rect_btn">Rectangle</button>
+    <button id="circ_btn">Circle</button>
+    <button id="text_btn">Text</button>
+<!--button id="erase_btn">Eraser</button-->
+    <button id="picbg_btn">Set background image</button>
+    <button id='undo_btn'>Undo</button>
+<div id="free_cntrls"></div>
+<div id="line_cntrls"></div>
+<div id="rect_cntrls"></div>
+<div id="circ_cntrls"></div>
+<div id="text_cntrls"></div>
+<!--div id="erase_cntrls"></div-->
+<div id="picbg_cntrls"></div>
+<div id="undo_cntrls"></div>
+</div>
+
+<div class="invisible" id="cnv_cntrls">
+    <div>
+        <div class="dr_ctrl_inf">Line thickness</div>
+        <input id="stroke_wt" type="range" min="5" max="20" value="10">
+    </div>
+    <div>
+        <div class="dr_ctrl_inf">Line colour</div>
+        <input id="stroke_col" type="color">
+        <div id="noline">No outline <input type="checkbox" id="nolinecb"></div>
+    </div>
+    <div>
+        <div class="dr_ctrl_inf">Fill colour</div>
+        <input id="fill_col" type="color">
+        <div>No fill <input type="checkbox" id="nofillcb"></div>
+    </div>
+    <div>
+        <div class="dr_ctrl_inf">Font style</div>
+        <select id="cnv_fnt">
+            <option class="ssfont" value="sans-serif">Select a font style</option>
+            <option id="sfont" value="serif">Serif</option>
+            <option class="ssfont" value="sans-serif">Sans Serif</option>
+            <option id="crsfont" value="cursive">Cursive</option>
+            <option id="monfont" value="monospace">Monospace</option>
+        </select>
+    </div>
+    <div>
+        <div class="dr_ctrl_inf">Font size</div>
+        <input id="fnt_sz" type="range" min="10" max="120" value="40">
+    </div>
+    <div>
+        <div class="dr_ctrl_inf">Tip style</div>
+        <select id="t_style">
+            <option value="round">Select a tip style</option>
+            <option value="round">Rounded</option>
+            <option value="square">Square</option>
+        </select>
+    </div>
+    <div>
+        <div class="dr_ctrl_inf">Background Image</div>
+        <div id="bkg_ctrls">
+			<button><label for="chbg_btn">Change image</label></button>
+            <input id="chbg_btn" type="file">
+            <button id="clrpicbg_btn">Clear image</button>
+        </div>
+    </div>
+    <span id="minicloser">x</span>
+</div>
+<div id="draw_wrapper">
+    <div id="bkg">
+	        <div id="txtwrp">
+            <span id="txtinput" contenteditable="true" placeholder="enter text">&nbsp;</span>
+            <div id="txtctrlwrp">
+                <div id="txtsave" class="txtctrl" title="save text">&#10004;</div>
+                <div id="txtdelete" class="txtctrl" title="delete text">&#935;</div>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+			 <!--end drawing stuff-->
+			 </div>
 		<div id="msgwrap">
-			<div id="msghdwrp">
+			<div id="msghdwrp" class="hdwrp">
 			<div id="msgdraghead">Chat box</div>
 			</div>
 			<div id="messageArea"></div>
@@ -48,5 +131,6 @@
      <script src="https://cdn.jsdelivr.net/npm/peerjs@0.3.20/dist/peer.min.js"></script>
      <script src="webrtc.js"></script>
      <script src="draggable.js"></script>
+	 <script src="draw.js"></script>
  </body>
  </html>

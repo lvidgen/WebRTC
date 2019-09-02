@@ -1,18 +1,15 @@
 function makeWindow(tag, indata, txt) {
 
-	var wrap = document.createElement("div");
+	var wrap = crEl("div",document.body);
     wrap.className = "draggable";
     wrap.style.zIndex = ++openWins;
-    document.body.appendChild(wrap);
     
-	var hdrwrap = document.createElement("div");
+	var hdrwrap = crEl("div",wrap);
     hdrwrap.className = "hdwrp";
-    wrap.appendChild(hdrwrap);
 	
-	var hdr = document.createElement("div");
+	var hdr = crEl("div",hdrwrap);
     hdr.className = "dragheader";
     hdr.textContent = txt;
-    hdrwrap.appendChild(hdr);
 	
 	if (tag == "calling") {
         var clsr = makeCloser(hdrwrap);
@@ -20,18 +17,15 @@ function makeWindow(tag, indata, txt) {
 		return wrap;
     }
     
-	var cnfwrp = document.createElement("div");
-	wrap.appendChild(cnfwrp);
+	var cnfwrp = crEl("div",wrap);
 	
-    var btn_y = document.createElement("button");
+    var btn_y = crEl("button",cnfwrp);
     btn_y.appendChild(document.createTextNode("Accept"));
     btn_y.className = "conf_btn accept_stream";
-	cnfwrp.appendChild(btn_y);
 
-	var btn_n = document.createElement("button");
+	var btn_n = crEl("button",cnfwrp);
     btn_n.appendChild(document.createTextNode("Reject"));
     btn_n.className = "conf_btn reject_stream";
-    cnfwrp.appendChild(btn_n);
 	
 	makeDraggable(hdrwrap);
 
@@ -112,22 +106,21 @@ function makeWindow(tag, indata, txt) {
                 }
                 
                 break;
-            case "photo":
+            case "pic_show":
                 hdr.textContent = "photo shared by " + conn.peer;
-                cont = document.createElement("img");
+                cont = crEl("img",wrap);
                 cont.src = indata;
                 cont.className = "pic_cont";
-                wrap.appendChild(cont);
                 clsr.onclick = function() {
 					indata=null;
                     document.body.removeChild(wrap);
                 }
                 break;
-            case "pdf":
+            case "pdf_show":
                 hdr.textContent = "pdf shared by " + conn.peer;
 				wrap.style.width="40%";
 				wrap.style.height="50%";
-                cont = document.createElement("object");
+                cont = crEl("object",wrap);
 				cont.type="application/pdf";
 				cont.data=indata;
                 cont.className = "pdf_cont";
@@ -153,7 +146,6 @@ function makeDraggable(hdr){
         }
 	    hdr.onmousedown = function(e) {
         e = e || window.event;
-        e.preventDefault();
         // get the mouse cursor position at startup:
         var pos3 = e.clientX,
 			pos4 = e.clientY;
@@ -186,10 +178,9 @@ function makeVid(con, cls, wrp, hdr) {
         if (hdr) {
             hdr.textContent = "call with " + conn.peer;
         }
-        cont = document.createElement("video");
+        cont = crEl("video",wrp);
         cont.autoplay = true;
         cont.srcObject = peerstream;
-        wrp.appendChild(cont);
     });
     cls.onclick = function() {
 		con.close();
@@ -197,10 +188,9 @@ function makeVid(con, cls, wrp, hdr) {
 }
 
 function makeCloser(hwrap) {
-    var clsr = document.createElement("div");
+    var clsr = crEl("div",hwrap);
     clsr.className = "closer";
     clsr.textContent = "X";
-    hwrap.appendChild(clsr);
     return clsr;
 }
 

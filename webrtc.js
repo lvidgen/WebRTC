@@ -1,15 +1,12 @@
-document.getElementById("mopener").checked = false;
+getById("mopener").checked = false;
 
 var lastPeerId = null,
 	peer = null, // Own peer object
 	conn = null,
-	receiveBuffer = [],
-	receivedSize = 0,
-	infilename,
-	infilesize,
 	openWins = 0,
 	hascam = false,
-	hasmic = false;
+	hasmic = false,
+	fileobj={};
 
 
 navigator.mediaDevices.enumerateDevices()
@@ -17,7 +14,7 @@ navigator.mediaDevices.enumerateDevices()
   devices.forEach(function(device) {
     if(device.kind == "videoinput"){
 		hascam=true;
-		document.getElementById("menu_vid").style.display="list-item";
+		getById("menu_vid").style.display="list-item";
 	};
 	if(device.kind == "audioinput"){
 		hasmic=true;
@@ -28,7 +25,13 @@ navigator.mediaDevices.enumerateDevices()
   console.log(err.name + ": " + err.message);
 });
 
+function getById(str){
+	return document.getElementById(str);
+};
 
+function crEl(typ,par){
+	return par.appendChild(document.createElement(typ));
+};
 
 
 /**
@@ -39,39 +42,43 @@ navigator.mediaDevices.enumerateDevices()
  */
 function getId() {
     // Create own peer object with connection to shared PeerJS server
-    var myName = document.getElementById("myId").value;
+    var myName = getById("myId").value.toLowerCase();
     peer = new Peer(myName, {
         debug: 2
     });
 
     peer.on('error', function(err) {
         if (err.type == 'unavailable-id') {
-            document.getElementById("logMessage").textContent = "That username has already been taken. Please choose another: ";
-            document.getElementById("myId").value = "";
+            getById("logMessage").textContent = "That username has already been taken. Please choose another: ";
+            getById("myId").value = "";
         }
     });
 
     peer.on('open', function(id) {
         // Workaround for peer.reconnect deleting previous id
         if (peer.id === null) {
-            console.log('Received null id from peer open');
+            getById("conninfo").textContent = conn.peer + " is not connected";
             peer.id = lastPeerId;
         } else {
             lastPeerId = peer.id;
         }
-        document.getElementById("logMessage").textContent = "Logged in as " + peer.id + ".";
-        document.getElementById("logInForm").style.display = "none";
-        document.getElementById("peerDeets").style.display = "block";
+        getById("logMessage").textContent = "Logged in as " + peer.id + ".";
+        getById("logInForm").style.display = "none";
+        getById("peerDeets").style.display = "block";
     });
+	
+	peer.on('disconnected', function() { 
+		getById("conninfo").textContent ="connection to server lost. Try reloading";
+	});
 	
     peer.on('connection', function(c) {
         // Allow only a single connection
+		c.on('open', function() {
+		});
+		
         if (conn) {
             c.on('open', function() {
-                c.send({
-                    tag: "msg",
-                    data: "Already connected to another client"
-                });
+                addMessage("sys: "+c.peer +" tried to connect");
                 setTimeout(function() {
                     c.close();
                 }, 500);
@@ -79,6 +86,7 @@ function getId() {
             return;
         }
         conn = c;
+		getById("conninfo").textContent = " Connected to " + conn.peer + ".";
         showLogIns();
     });
 }
@@ -89,7 +97,7 @@ function join() {
         conn.close();
     }
     // Create connection to destination peer specified in the input field
-    conn = peer.connect(document.getElementById("peerId").value, {
+    conn = peer.connect(getById("peerId").value.toLowerCase(), {
         reliable: true
     });
 
@@ -99,13 +107,15 @@ function join() {
 };
 
 function showLogIns() {
-    document.getElementById("logMessage").textContent += " Connected to " + conn.peer + ".";
-    document.getElementById("peerDeets").style.display = "none";
-    document.getElementById("msgwrap").style.display = "grid";
-    document.getElementById("main").style.display = "grid";
-    document.getElementById("burger").style.display = "inline";
-	document.getElementById("msgdraghead").textContent = "Chat with " + conn.peer;
-	makeDraggable(document.getElementById("msghdwrp"))
+	getById("conninfo").style.display = "block";
+    getById("conninfo").textContent = " Connected to " + conn.peer + ".";
+    getById("peerDeets").style.display = "none";
+    getById("msgwrap").style.display = "grid";
+    getById("main").style.display = "grid";
+    //getById("burger").style.display = "inline"; // for mobile
+	getById("menuwrapper").style.display = "block";
+	getById("msgdraghead").textContent = "Chat with " + conn.peer;
+	makeDraggable(getById("msghdwrp"))
     peer.on('call', function(mCon) {
         switch (mCon.metadata) {
             case "vid":
@@ -117,50 +127,69 @@ function showLogIns() {
         };
     });
     ready();
+	
 }
 
 function ready() {
     conn.on('data', function(obj) {
         switch (obj.tag) {
             case "fileinfo":
-                var fp = document.getElementById('fileProgress');
-                infilename = obj.filename;
-                infilesize = obj.filesize;
-                fp.value = 0;
-                fp.max = infilesize;
-                document.getElementById('fileText').textContent = `Receiving '${infilename}' (0/${infilesize} bytes)`;
+				fileobj[obj.stamp]={
+					name:obj.filename,
+					size:obj.filesize,
+					receivedSize:0,
+					buff:[]
+				}
                 break;
-            case "file":
-                receiveFile(obj.data, "file");
-                break;
+            case "file_share":
             case "pic_show":
-                receiveFile(obj.data, "photo");
-                break;
             case "pdf_show":
-                receiveFile(obj.data, "pdf");
+            case "chbg_btn":
+                receiveFile(obj.data, obj.tag, obj.stamp);
                 break;
             case "msg":
                 addMessage(conn.peer + ": " + obj.data);
                 break;
+			case "drawrect":
+				drawRect(obj, true);
+				break;
+			case "drawcirc":
+				drawCirc(obj, true);
+				break;
+			case "drawfree":
+				drawFree(obj, true);
+				break;
+			case "drawline":
+				drawLine(obj, true);
+				break;
+			case "drawtext":
+				drawText(obj, true);
+				break;			
+			case "undo":
+				unDoIt();
+				break;
+			case "make_canvas":
+				makeCanvas(true);
+			break;	
         };
     });
     conn.on('close', function() {
-        status.innerHTML = "Connection reset<br>Awaiting connection...";
+        getById("conninfo").textContent = "Connection reset. Awaiting connection...";
         conn = null;
     });
+makeCanvas();
 }
 
 function addMessage(msg) {
-    var message = document.getElementById("messageArea"),
-		dv = document.createElement("div");
+    var message = getById("messageArea"),
+		dv = crEl("div",message);
     dv.appendChild(document.createTextNode(msg));
-    message.appendChild(dv);
     dv.scrollIntoView(false);
 }
 
 function sendIt() {
     if (conn.open) {
-        var msgbox = document.getElementById("sendMessageBox"),
+        var msgbox = getById("sendMessageBox"),
 			msg = msgbox.value;
         msgbox.value = "";
         conn.send({
@@ -177,8 +206,8 @@ function pressEnter(e, func) {
     }
 }
 
-document.getElementById("menu").onclick = function(e) {
-    document.getElementById("mopener").checked = false;
+getById("menu").onclick = function(e) {
+    getById("mopener").checked = false;
     switch (e.target.id) {
         case "menu_screen":
             shareScreen();
@@ -186,24 +215,31 @@ document.getElementById("menu").onclick = function(e) {
         case "menu_vid":
             videoCall();
             break;
+        case "menu_draw":
+            if(e.target.textContent=="Show drawing tools"){
+				getById("cnv_btns").className="visible";
+				e.target.textContent="Hide drawing tools";
+			} else {
+				getById("cnv_btns").className="invisible";
+				e.target.textContent="Show drawing tools";
+			}
+            break;
     }
 }
 
-document.getElementById("logIn").addEventListener('click', getId);
+getById("logIn").addEventListener('click', getId);
 
-document.getElementById("connectTo").addEventListener('click', join);
+getById("connectTo").addEventListener('click', join);
 
-//document.getElementById("sendButton").addEventListener('click', sendIt);
-
-document.getElementById("myId").addEventListener('keyup', function(e) {
+getById("myId").addEventListener('keyup', function(e) {
     pressEnter(e, getId)
 });
 
-document.getElementById("peerId").addEventListener('keyup', function(e) {
+getById("peerId").addEventListener('keyup', function(e) {
     pressEnter(e, join)
 });
 
-document.getElementById("sendMessageBox").addEventListener('keyup', function(e) {
+getById("sendMessageBox").addEventListener('keyup', function(e) {
     pressEnter(e, sendIt)
 });
 
@@ -249,34 +285,28 @@ async function videoCall() {
 function closeMediaConn(stream) {
     let tracks = stream.getTracks();
     tracks.forEach(track => track.stop());
-}
+};
 
-document.getElementById("file_share").onchange = readFile;
-document.getElementById("pic_show").onchange = readFile;
-document.getElementById("pdf_show").onchange = readFile;
+getById("file_share").onchange = readFile;
+getById("pic_show").onchange = readFile;
+getById("pdf_show").onchange = readFile;
+getById("chbg_btn").onchange = readFile;
+
 
 //get file from input
 function readFile() {
-    var fp = document.getElementById('fileProgress'),
-		ft = document.getElementById('fileText'),
-		theid = this.id,
+    var theid = this.id,
 		share = theid == "file_share", //for sending files
-		chunkSize = 16384;
-		fileReader = new FileReader();
+		chunkSize = 16384,
+		fileReader = new FileReader(),
+		timestamp = Date.now(),
 		offset = 0,
 		file = this.files[0];
 		this.value="";
     if (file.size === 0) {
         return;
     }
-    if (share) {
-        fp.style.display = "inline";
-        ft.style.display = "inline";
-        document.getElementById('fileText').textContent = `Sending '${file.name}' (0/${file.size} bytes)`;
-        fp.value = 0;
-        fp.max = file.size;
-    } else {
-        if (file.type.indexOf("image") == -1 && theid == "pic_show") {
+        if (file.type.indexOf("image") == -1 && (theid == "pic_show"||theid == "chbg_btn")) {
             makeWindow("info", "Selected file must be an image.", "Error");
             return;
         }
@@ -284,37 +314,33 @@ function readFile() {
             makeWindow("info", "Selected file must be a pdf file.", "Error");
             return;
         }
-    }
+
     conn.send({
         tag: "fileinfo",
         filename: file.name,
-        filesize: file.size
+        filesize: file.size,
+		stamp:timestamp
     })
 
     fileReader.addEventListener('error', error => console.error('Error reading file:', error));
     fileReader.addEventListener('abort', event => console.log('File reading aborted:', event));
     fileReader.addEventListener('load', e => {
         offset += e.target.result.byteLength;
-        if (share) {
-            conn.send({
-                tag: "file",
-                data: e.target.result
-            });
-            document.getElementById('fileText').textContent = `Sending '${file.name}' (${offset}/${file.size} bytes)`;
-            fp.value = offset;
-        } else {
-            conn.send({
+             conn.send({
                 tag: theid,
-                data: e.target.result
+                data: e.target.result,
+				stamp:timestamp
             });
-        }
         if (offset < file.size) {
             readSlice(offset);
         } else {
-            document.getElementById('fileText').textContent = `Sent '${file.name}' (${file.size} bytes)`;
-            fp.style.display = "none";
-            ft.style.display = "none";
-        }
+			if(theid == "chbg_btn"){
+				var myurl=URL.createObjectURL(file);
+				getById("bkg").style.backgroundImage="url('" + myurl + "')";
+				getById("cnv_cntrls").className="invisible";
+				getById("txtwrp").style.display="none";
+			};
+        };
     });
     const readSlice = o => {
         const slice = file.slice(offset, o + chunkSize);
@@ -323,45 +349,31 @@ function readFile() {
     readSlice(0);
 }
 
-function receiveFile(data, typ) {
-    receiveBuffer.push(data);
-    receivedSize += data.byteLength;
-    var share = typ == "file";
-    if (share) {
-        var fp = document.getElementById('fileProgress'),
-			ft = document.getElementById('fileText');
-        fp.style.display = "inline";
-        ft.style.display = "inline";
-        fp.value = receivedSize;
-        ft.textContent = `Receiving '${infilename}' (${receivedSize}/${infilesize} bytes)`;
-    }
-    if (receivedSize === infilesize) {
-        const received = new Blob(receiveBuffer);
+function receiveFile(data, typ, stmp) {
+    fileobj[stmp].buff.push(data);
+	fileobj[stmp].receivedSize += data.byteLength;
+    if (fileobj[stmp].receivedSize === fileobj[stmp].size) {
+        const received = new Blob(fileobj[stmp].buff);
         var obj = URL.createObjectURL(received);
-        if (share) {
-            var dv = document.createElement("div"),
-				lnk = document.createElement("a");
-            lnk.href = obj;
-            lnk.download = infilename;
-            lnk.appendChild(document.createTextNode(`Click to download '${infilename}' (${infilesize} bytes)`));
-            document.getElementById('fileText').textContent = `Received '${infilename}' (${infilesize} bytes)`;
-            dv.appendChild(lnk);
-            document.getElementById("messageArea").appendChild(dv);
-            lnk.scrollIntoView(false);
-            fp.style.display = "none";
-            ft.style.display = "none";
-        } else {
-            switch (typ) {
-				
-                case "photo":
-                    makeWindow(typ, obj, conn.peer + " wants to share a " + typ + " with you");
+            switch (typ) {				
+                case "pic_show":
+                    makeWindow(typ, obj, conn.peer + " wants to share a photo with you");
                     break;
-                case "pdf":
-                    makeWindow(typ, obj, conn.peer + " wants to share a " + typ + " with you");
+                case "pdf_show":
+                    makeWindow(typ, obj, conn.peer + " wants to share a pdf with you");
                     break;
-            }
-        }
-        receiveBuffer = [];
-        receivedSize = 0;
+				case "chbg_btn":
+                    getById("bkg").style.backgroundImage="url('" + obj + "')";
+                    break;
+				case "file_share":
+                    var dv = crEl("div",getById("messageArea")),
+					lnk = crEl("a",dv);
+					lnk.href = obj;
+					lnk.download = fileobj[stmp].name;
+					lnk.appendChild(document.createTextNode(`Click to download '${fileobj[stmp].name}'`));
+					lnk.scrollIntoView(false);
+                    break;
+            }	
+        delete fileobj[stmp];
     }
 }
