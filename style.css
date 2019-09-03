@@ -236,16 +236,17 @@
 }
 
 #cnv_btns {
-    display:inline-grid;
+    display:none;
 	grid-template-rows: auto auto;
 	grid-template-columns: auto auto auto auto auto auto auto;
+	position: absolute;
+	z-index:2;
 }
 
 #cnv_cntrls {
     position: absolute;
     background-color: white;
-    z-index: 9999999999999999;
-    display: inline-flex;
+    display: none;
     border-width: 0.125vw 0.125vw 0.125vw 0;
     border-style: solid;
     margin-top: 0.25vh;

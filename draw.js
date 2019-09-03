@@ -33,26 +33,25 @@ function getCanvas(incoming){
 // add event listeners to specify when functions should be triggered
 
 
-getById("undo_btn").onclick= function(){
+getById("undo_btn").onpointerdown= function(){
 conn.send({tag:"undo"})
 unDoIt();
 };
 
 getById("minicloser").onclick=function(){
-getById("cnv_cntrls").className="invisible";
+getById("cnv_cntrls").style.display="none";
 getById("txtwrp").style.display="none";
 };
 
 getById("stroke_col").onchange=checkFont;
 getById("cnv_fnt").onchange=checkFont;
 getById("fnt_sz").onchange=checkFont;
-getById("txtsave").onclick=saveText;
-getById("txtdelete").onclick=endText;
+getById("txtsave").onpointerdown=saveText;
+getById("txtdelete").onpointerdown=endText;
 
 function setListeners(){
 var canvas = getCanvas().cnv;
-	canvas.onmousedown = function (e){
-		console.log("down")
+	canvas.onpointerdown = function (e){
 	setPosition(e);
 	makeCanvas(false);
 	conn.send({tag:"make_canvas"})
@@ -61,21 +60,21 @@ canvas.style.cursor = "default";
 
 switch(shapebtn){
 case "free_btn":
-	canvas.onmousemove = makeFree;
+	canvas.onpointermove = makeFree;
 break;
 case "line_btn":
-	canvas.onmousemove = makeLine;
+	canvas.onpointermove = makeLine;
 break;
 case "rect_btn":
-	canvas.onmousemove = makeRect;	
+	canvas.onpointermove = makeRect;	
 break;
 case "circ_btn":
-	canvas.onmousemove = makeCircle;	
+	canvas.onpointermove = makeCircle;	
 break;
 case "text_btn":
     canvas.style.cursor = "text"; 
-	canvas.onmouseup = function(){};
-	canvas.onmousedown = function (e){
+	canvas.onpointerup = function(){};
+	canvas.onpointerdown = function (e){
 	setPosition(e);
 	makeText(e);
 	};
@@ -96,12 +95,14 @@ break;
 };
 
 
-getById("cnv_btns").onclick=function(e){
-getById("cnv_cntrls").className="visible";
+getById("cnv_btns").onpointerdown=function(e){
+
+if(e.target.id.indexOf("_btn")!=-1){
+getById("cnv_cntrls").style.display="inline-flex";
 
 var dvs = document.querySelectorAll("#cnv_cntrls > div"), i = 0, len = dvs.length;
 for (i; i<len; i++){
-dvs[i].className = "none"; 
+dvs[i].style.display = "none"; 
 	}
 
 var toshow=[], nof=getById("nofillcb"), 
@@ -135,23 +136,28 @@ case "picbg_btn":
 break;
 /* not yet :( 
 case "pdfbg_btn":
-	getById("cnv_cntrls").className="invisible";
+	getById("cnv_cntrls").style.display="none";
 break;
 */
 case "undo_btn":
-	getById("cnv_cntrls").className="invisible";
+	getById("cnv_cntrls").style.display="none";
 break;
 };
 
 shapebtn = e.target.id;
 //setListeners();
 for (var a =0; a<toshow.length; a++){
-getById(toshow[a]).parentElement.className="block";
+getById(toshow[a]).parentElement.style.display="block";
+}
+ var theid=e.target.id;
+ if(theid.indexOf("btn")!=-1){
+ var targ = theid.replace("btn","cntrls");
+ getById(targ).appendChild(getById("cnv_cntrls"))
+ }
+}
 }
 
- var targ = e.target.id.replace("btn","cntrls");
- getById(targ).appendChild(getById("cnv_cntrls"))
-}
+
 // new position from mouse events
 function setPosition(e) {
 var canvas = getCanvas().cnv,
@@ -269,13 +275,13 @@ endText();
 };
 
 function endText(){
-getById("cnv_cntrls").className="invisible";
+getById("cnv_cntrls").style.display="none";
 getById("txtwrp").style.display="none";
 shapebtn="";
 };
 
 
-getById("clrpicbg_btn").onclick=function(){
+getById("clrpicbg_btn").onpointerdown=function(){
 getById("bkg").style.backgroundImage="";
 };
 

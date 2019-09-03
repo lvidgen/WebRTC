@@ -29,7 +29,7 @@ function makeWindow(tag, indata, txt) {
 	
 	makeDraggable(hdrwrap);
 
-    btn_n.onclick = function() {
+    btn_n.onpointerdown = function() {
         switch (tag) {
             case "vid":
                 indata.answer();
@@ -57,7 +57,7 @@ function makeWindow(tag, indata, txt) {
         cnfwrp.removeChild(btn_n);
     }
 
-    btn_y.onclick = function() {
+    btn_y.onpointerdown = function() {
         wrap.removeChild(cnfwrp);
         wrap.style.resize = "both";
         var cont = null,
@@ -111,7 +111,7 @@ function makeWindow(tag, indata, txt) {
                 cont = crEl("img",wrap);
                 cont.src = indata;
                 cont.className = "pic_cont";
-                clsr.onclick = function() {
+                clsr.onpointerdown = function() {
 					indata=null;
                     document.body.removeChild(wrap);
                 }
@@ -125,7 +125,7 @@ function makeWindow(tag, indata, txt) {
 				cont.data=indata;
                 cont.className = "pdf_cont";
                 wrap.appendChild(cont);
-                clsr.onclick = function() {
+                clsr.onpointerdown = function() {
 					indata=null;
                     document.body.removeChild(wrap);
                 }
@@ -139,22 +139,22 @@ function makeWindow(tag, indata, txt) {
 
 function makeDraggable(hdr){
 		var wrp = hdr.parentElement;
-	    wrp.onmousedown = function(e) {
+	    wrp.onpointerdown = function(e) {
             if (wrp.style.zIndex < openWins) {
                 wrp.style.zIndex = ++openWins;
             }
         }
-	    hdr.onmousedown = function(e) {
+	    hdr.onpointerdown = function(e) {
         e = e || window.event;
         // get the mouse cursor position at startup:
         var pos3 = e.clientX,
 			pos4 = e.clientY;
-        document.onmouseup = function() {
-            document.onmouseup = null;
-            document.onmousemove = null;
+        document.onpointerup = function() {
+            document.onpointerup = null;
+            document.onpointermove = null;
         };
         // call a function whenever the cursor moves:
-        document.onmousemove = function(e) {
+        document.onpointermove = function(e) {
 			if(e.clientY > 0){ // stop windows from getting dragged off the top of the screen
             var e = e || window.event,
             // calculate the new cursor position:
@@ -182,7 +182,7 @@ function makeVid(con, cls, wrp, hdr) {
         cont.autoplay = true;
         cont.srcObject = peerstream;
     });
-    cls.onclick = function() {
+    cls.onpointerdown = function() {
 		con.close();
     }
 }

@@ -46,7 +46,6 @@ function getId() {
     peer = new Peer(myName, {
         debug: 2
     });
-
     peer.on('error', function(err) {
         if (err.type == 'unavailable-id') {
             getById("logMessage").textContent = "That username has already been taken. Please choose another: ";
@@ -206,7 +205,7 @@ function pressEnter(e, func) {
     }
 }
 
-getById("menu").onclick = function(e) {
+getById("menu").onpointerdown = function(e) {
     getById("mopener").checked = false;
     switch (e.target.id) {
         case "menu_screen":
@@ -217,19 +216,19 @@ getById("menu").onclick = function(e) {
             break;
         case "menu_draw":
             if(e.target.textContent=="Show drawing tools"){
-				getById("cnv_btns").className="visible";
+				getById("cnv_btns").style.display="inline-grid";
 				e.target.textContent="Hide drawing tools";
 			} else {
-				getById("cnv_btns").className="invisible";
+				getById("cnv_btns").style.display="none";
 				e.target.textContent="Show drawing tools";
 			}
             break;
     }
 }
 
-getById("logIn").addEventListener('click', getId);
+getById("logIn").addEventListener('pointerdown', getId);
 
-getById("connectTo").addEventListener('click', join);
+getById("connectTo").addEventListener('pointerdown', join);
 
 getById("myId").addEventListener('keyup', function(e) {
     pressEnter(e, getId)
