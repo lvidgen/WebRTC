@@ -17,6 +17,30 @@ function makeCanvas(incoming){
 	} else {
 	var canvas = crEl("canvas",wrp);
 	canvas.className="mycanvas";
+	
+	canvas.addEventListener("touchstart", function (e) {
+	var touch = e.touches[0];
+	  var mouseEvent = new MouseEvent("mousedown", {
+		clientX: touch.clientX,
+		clientY: touch.clientY,
+		buttons: 1
+	  });
+	  canvas.dispatchEvent(mouseEvent);
+	}, false);
+	canvas.addEventListener("touchend", function (e) {
+	  var mouseEvent = new MouseEvent("mouseup", {});
+	  canvas.dispatchEvent(mouseEvent);
+	}, false);
+	canvas.addEventListener("touchmove", function (e) {
+	  var touch = e.touches[0];
+	  var mouseEvent = new MouseEvent("mousemove", {
+		clientX: touch.clientX,
+		clientY: touch.clientY,
+		buttons: 1
+	  });
+	  canvas.dispatchEvent(mouseEvent);
+	}, false);
+	
 	setListeners();	
 	}	
 	var ctx = canvas.getContext("2d");
@@ -51,7 +75,7 @@ getById("txtdelete").onpointerdown=endText;
 
 function setListeners(){
 var canvas = getCanvas().cnv;
-	canvas.onpointerdown = function (e){
+	canvas.onmousedown = function (e){
 	setPosition(e);
 	makeCanvas(false);
 	conn.send({tag:"make_canvas"})
@@ -60,21 +84,21 @@ canvas.style.cursor = "default";
 
 switch(shapebtn){
 case "free_btn":
-	canvas.onpointermove = makeFree;
+	canvas.onmousemove = makeFree;
 break;
 case "line_btn":
-	canvas.onpointermove = makeLine;
+	canvas.onmousemove = makeLine;
 break;
 case "rect_btn":
-	canvas.onpointermove = makeRect;	
+	canvas.onmousemove = makeRect;	
 break;
 case "circ_btn":
-	canvas.onpointermove = makeCircle;	
+	canvas.onmousemove = makeCircle;	
 break;
 case "text_btn":
     canvas.style.cursor = "text"; 
-	canvas.onpointerup = function(){};
-	canvas.onpointerdown = function (e){
+	canvas.onmouseup = function(){};
+	canvas.onmousedown = function (e){
 	setPosition(e);
 	makeText(e);
 	};
