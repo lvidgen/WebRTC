@@ -362,5 +362,19 @@ ctx.fillStyle = obj.stl;
 ctx.fillText(obj.tx, obj.posx, obj.posy)
 };
 
-
+document.body.addEventListener("touchstart", function (e) {
+  if (e.target.tagName == "canvas") {
+    e.preventDefault();
+  }
+}, false);
+document.body.addEventListener("touchend", function (e) {
+  if (e.target.tagName == "canvas") {
+    e.preventDefault();
+  }
+}, false);
+document.body.addEventListener("touchmove", function (e) {
+  if (e.target.tagName == "canvas") {
+    e.preventDefault();
+  }
+}, false);
 
