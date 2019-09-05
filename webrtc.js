@@ -2,7 +2,7 @@ var fileobj = {},
     pos = {
         x: 0,
         y: 0
-    }, // last known position
+    }; // last known position
     //lastPeerId = null,
 
 getById("mopener").checked = false;
