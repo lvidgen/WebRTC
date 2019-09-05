@@ -10,12 +10,6 @@
      font-family: sans-serif;
  }
 
- #winholder {
-     position: absolute;
-     height: 100%;
-     width: 100%;
- }
-
  #wrapper {
      display: grid;
      grid-template-rows: auto minmax(0, 1fr);

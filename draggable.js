@@ -1,6 +1,6 @@
 function makeWindow(tag, indata, txt, conn) {
     var sender = getById("theirname").textContent,
-        wrap = crEl("div", getById("winholder"));
+        wrap = crEl("div", getById("main"));
     wrap.className = "draggable";
     wrap.style.zIndex = highZ();
 
@@ -39,14 +39,14 @@ function makeWindow(tag, indata, txt, conn) {
                     setTimeout(function() {
                         indata.close();
                         indata = null;
-                        getById("winholder").removeChild(wrap);
+                        getById("main").removeChild(wrap);
                     }, 0);
                 });
                 break;
             case "pdf":
             case "photo":
                 indata = null;
-                getById("winholder").removeChild(wrap);
+                getById("main").removeChild(wrap);
                 break;
         }
     }
@@ -73,7 +73,7 @@ function makeWindow(tag, indata, txt, conn) {
                     hdr.textContent = "screen shared from " + sender;
                     indata.once('close', function() {
                         indata = null;
-                        getById("winholder").removeChild(wrap);
+                        getById("main").removeChild(wrap);
                     });
                 } else {
                     hdr.textContent = "call with " + sender;
@@ -88,14 +88,14 @@ function makeWindow(tag, indata, txt, conn) {
                                         indata.once('close', function() {
                                             closeMediaConn(stream);
                                             indata = null;
-                                            getById("winholder").removeChild(wrap);
+                                            getById("main").removeChild(wrap);
                                         });
                                     });
                             } else { // no cam or mic, just answer the call
                                 indata.answer();
                                 indata.once('close', function() {
                                     indata = null;
-                                    getById("winholder").removeChild(wrap);
+                                    getById("main").removeChild(wrap);
                                 });
                             }
                         })
@@ -111,7 +111,7 @@ function makeWindow(tag, indata, txt, conn) {
                 cont.className = "pic_cont";
                 clsr.onclick = function() {
                     indata = null;
-                    getById("winholder").removeChild(wrap);
+                    getById("main").removeChild(wrap);
                 }
                 break;
             case "pdf_show":
@@ -125,11 +125,11 @@ function makeWindow(tag, indata, txt, conn) {
                 wrap.appendChild(cont);
                 clsr.onclick = function() {
                     indata = null;
-                    getById("winholder").removeChild(wrap);
+                    getById("main").removeChild(wrap);
                 }
                 break;
             case "info":
-                getById("winholder").removeChild(wrap);
+                getById("main").removeChild(wrap);
                 break;
         }
     }
@@ -175,7 +175,7 @@ function makeDraggable(hdr) {
 }
 
 function highZ() {
-    return Math.max.apply(null, Array.from(document.querySelectorAll('#winholder > div')).map(item => Number(item.style.zIndex))) + 1;
+    return Math.max.apply(null, Array.from(document.querySelectorAll('#main > div')).map(item => Number(item.style.zIndex))) + 1;
 }
 
 function makeVid(con, cls, wrp, hdr) {

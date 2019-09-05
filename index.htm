@@ -1,149 +1,143 @@
  <!DOCTYPE html>
  <html>
-
  <head>
      <meta charset="UTF-8">
      <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0">
      <title>WebRTC</title>
-     <link id="mystyle" rel="stylesheet" href="style.css">
+	 <link id="mystyle" rel="stylesheet" href="style.css">
  </head>
-
  <body>
      <div id="wrapper">
          <div id="topbar">
              <div id="menuwrapper">
-                 <!--hamburger menu holder-->
+			 <!--hamburger menu holder-->
                  <label for="mopener">
                      <img id="burger" src="images/menu.png">
                  </label>
                  <input type="checkbox" id="mopener" autocomplete="off">
-                 <!--end hamburger menu holder-->
+			 <!--end hamburger menu holder-->
                  <ul id="menu">
                      <li id="menu_vid">Video call</li>
                      <li id="menu_file"><label for="file_share">Share file </label><input id="file_share" type="file"></li>
                      <li id="menu_screen">Share screen</li>
                      <li id="menu_pic"><label for="pic_show">Show photo </label><input id="pic_show" type="file"></li>
                      <li id="menu_pdf"><label for="pdf_show">Show pdf </label><input id="pdf_show" type="file"></li>
-                     <li id="menu_draw">Show drawing tools</li>
+					 <li id="menu_draw">Show drawing tools</li>
                  </ul>
              </div>
              <div id="infowrap">
-                 <div id="logMessage">Choose a username to log in: </div>
-                 <div id="conninfo"><span id="connstatus"></span><span id="theirname"></span></div>
+			  <div id="logMessage">Choose a username to log in: </div><div id="conninfo"><span id="connstatus"></span><span id="theirname"></span></div>
                  <span id="logInForm">
                      <input id="myId"><button id="logIn">Submit</button>
                  </span>
-                 <div id="peerDeets">Enter your friend's ID here: <input id="peerId"> and click here: <button id="connectTo">Connect</button> or wait for a connection</div>
-             </div>
+                 <div id="peerDeets">Enter your friend's ID here: <input id="peerId"> and click here: <button id="connectTo">Connect</button> or wait for a connection</div>	
+			 </div>
          </div>
          <div id="main">
              <div id="playArea">
-                 <!--start drawing stuff-->
+			<!--start drawing stuff--> 
+	
+<div id="cnv_butns">
+    <button id="free_btn"><label for="freerad">Freehand</label></button>
+    <button id="line_btn"><label for="linerad">Line</label></button>
+    <button id="rect_btn"><label for="rectrad">Rectangle</label></button>
+    <button id="circ_btn"><label for="circrad">Circle</label></button>
+    <button id="text_btn"><label for="textrad">Text</label></button>
+<!--button id="erase_btn"><label for="eraserad">Eraser</label></button-->
+    <button id="picbg_btn"><label for="picbgrad">Set background image</label></button>
+    <button id='undo_btn'><label for="undorad">Undo</label></button>
+<div id="free_cntrls"></div>
+<div id="line_cntrls"></div>
+<div id="rect_cntrls"></div>
+<div id="circ_cntrls"></div>
+<div id="text_cntrls"></div>
+<!--div id="erase_cntrls"></div-->
+<div id="picbg_cntrls"></div>
+<div id="undo_cntrls"></div>
+</div>
 
-                 <div id="cnv_butns">
-                     <button id="free_btn"><label for="freerad">Freehand</label></button>
-                     <button id="line_btn"><label for="linerad">Line</label></button>
-                     <button id="rect_btn"><label for="rectrad">Rectangle</label></button>
-                     <button id="circ_btn"><label for="circrad">Circle</label></button>
-                     <button id="text_btn"><label for="textrad">Text</label></button>
-                     <!--button id="erase_btn"><label for="eraserad">Eraser</label></button-->
-                     <button id="picbg_btn"><label for="picbgrad">Set background image</label></button>
-                     <button id='undo_btn'><label for="undorad">Undo</label></button>
-                     <div id="free_cntrls"></div>
-                     <div id="line_cntrls"></div>
-                     <div id="rect_cntrls"></div>
-                     <div id="circ_cntrls"></div>
-                     <div id="text_cntrls"></div>
-                     <!--div id="erase_cntrls"></div-->
-                     <div id="picbg_cntrls"></div>
-                     <div id="undo_cntrls"></div>
-                 </div>
+<div id="cnv_cntrls">
+    <div>
+        <div class="dr_ctrl_inf">Line thickness</div>
+        <input id="stroke_wt" type="range" min="5" max="20" value="10">
+    </div>
+    <div>
+        <div class="dr_ctrl_inf">Line colour</div>
+        <input id="stroke_col" type="color">
+        <div id="noline">No line <input type="checkbox" id="nolinecb"></div>
+    </div>
+    <div>
+        <div class="dr_ctrl_inf">Fill colour</div>
+        <input id="fill_col" type="color">
+        <div>No fill <input type="checkbox" id="nofillcb"></div>
+    </div>
+    <div>
+        <div class="dr_ctrl_inf">Font style</div>
+        <select id="cnv_fnt">
+            <option class="ssfont" value="sans-serif">Select a font style</option>
+            <option id="sfont" value="serif">Serif</option>
+            <option class="ssfont" value="sans-serif">Sans Serif</option>
+            <option id="crsfont" value="cursive">Cursive</option>
+            <option id="monfont" value="monospace">Monospace</option>
+        </select>
+    </div>
+    <div>
+        <div class="dr_ctrl_inf">Font size</div>
+        <input id="fnt_sz" type="range" min="10" max="120" value="40">
+    </div>
+    <div>
+        <div class="dr_ctrl_inf">Tip style</div>
+        <select id="t_style">
+            <option value="round">Select a tip style</option>
+            <option value="round">Rounded</option>
+            <option value="square">Square</option>
+        </select>
+    </div>
+    <div>
+        <div class="dr_ctrl_inf">Background Image</div>
+        <div id="bkg_ctrls">
+			<button><label for="chbg_btn">Change image</label></button>
+            <input id="chbg_btn" type="file">
+            <button id="clrpicbg_btn">Clear image</button>
+        </div>
+    </div>
+    <span id="minicloser">x</span>
+</div>
+<div id="draw_wrapper">
+    <div id="bkg">
+	        <div id="txtwrp">
+            <span id="txtinput" contenteditable="true" placeholder="enter text">&nbsp;</span>
+            <div id="txtctrlwrp">
+                <div id="txtsave" class="txtctrl" title="save text">&#10004;</div>
+                <div id="txtdelete" class="txtctrl" title="delete text">&#935;</div>
+            </div>
+        </div>
+    </div>
+</div>
 
-                 <div id="cnv_cntrls">
-                     <div>
-                         <div class="dr_ctrl_inf">Line thickness</div>
-                         <input id="stroke_wt" type="range" min="5" max="20" value="10">
-                     </div>
-                     <div>
-                         <div class="dr_ctrl_inf">Line colour</div>
-                         <input id="stroke_col" type="color">
-                         <div id="noline">No line <input type="checkbox" id="nolinecb"></div>
-                     </div>
-                     <div>
-                         <div class="dr_ctrl_inf">Fill colour</div>
-                         <input id="fill_col" type="color">
-                         <div>No fill <input type="checkbox" id="nofillcb"></div>
-                     </div>
-                     <div>
-                         <div class="dr_ctrl_inf">Font style</div>
-                         <select id="cnv_fnt">
-                             <option class="ssfont" value="sans-serif">Select a font style</option>
-                             <option id="sfont" value="serif">Serif</option>
-                             <option class="ssfont" value="sans-serif">Sans Serif</option>
-                             <option id="crsfont" value="cursive">Cursive</option>
-                             <option id="monfont" value="monospace">Monospace</option>
-                         </select>
-                     </div>
-                     <div>
-                         <div class="dr_ctrl_inf">Font size</div>
-                         <input id="fnt_sz" type="range" min="10" max="120" value="40">
-                     </div>
-                     <div>
-                         <div class="dr_ctrl_inf">Tip style</div>
-                         <select id="t_style">
-                             <option value="round">Select a tip style</option>
-                             <option value="round">Rounded</option>
-                             <option value="square">Square</option>
-                         </select>
-                     </div>
-                     <div>
-                         <div class="dr_ctrl_inf">Background Image</div>
-                         <div id="bkg_ctrls">
-                             <button><label for="chbg_btn">Change image</label></button>
-                             <input id="chbg_btn" type="file">
-                             <button id="clrpicbg_btn">Clear image</button>
-                         </div>
-                     </div>
-                     <span id="minicloser">x</span>
-                 </div>
-                 <div id="draw_wrapper">
-                     <div id="bkg">
-                         <div id="txtwrp">
-                             <span id="txtinput" contenteditable="true" placeholder="enter text">&nbsp;</span>
-                             <div id="txtctrlwrp">
-                                 <div id="txtsave" class="txtctrl" title="save text">&#10004;</div>
-                                 <div id="txtdelete" class="txtctrl" title="delete text">&#935;</div>
-                             </div>
-                         </div>
-                     </div>
-                 </div>
-
-                 <!--end drawing stuff-->
-             </div>
-             <div id="winholder">
-                 <div id="msgwrap">
-                     <div id="msghdwrp" class="hdwrp">
-                         <div id="msgdraghead">Chat box</div>
-                     </div>
-                     <div id="messageArea"></div>
-                     <textarea id="sendMessageBox" placeholder="Send a message"></textarea>
-                 </div>
-             </div>
-         </div>
-     </div>
-     <div id="shape_btn_rads">
-         <input type="radio" name="shaperad" id="freerad" autocomplete="off">
-         <input type="radio" name="shaperad" id="linerad" autocomplete="off">
-         <input type="radio" name="shaperad" id="rectrad" autocomplete="off">
-         <input type="radio" name="shaperad" id="circrad" autocomplete="off">
-         <input type="radio" name="shaperad" id="textrad" autocomplete="off">
-         <input type="radio" name="shaperad" id="picbgrad" autocomplete="off">
-         <input type="radio" name="shaperad" id="undorad" autocomplete="off">
-     </div>
+			 <!--end drawing stuff-->
+			 </div>
+		<div id="msgwrap">
+			<div id="msghdwrp" class="hdwrp">
+			<div id="msgdraghead">Chat box</div>
+			</div>
+			<div id="messageArea"></div>
+            <textarea id="sendMessageBox" placeholder="Send a message"></textarea>
+		</div>			 
+        </div>	
+	 </div>
+	 <div id="shape_btn_rads">
+	 <input type="radio" name="shaperad" id="freerad" autocomplete="off">
+	 <input type="radio" name="shaperad" id="linerad" autocomplete="off">
+	 <input type="radio" name="shaperad" id="rectrad" autocomplete="off">
+	 <input type="radio" name="shaperad" id="circrad" autocomplete="off">
+	 <input type="radio" name="shaperad" id="textrad" autocomplete="off">
+	 <input type="radio" name="shaperad" id="picbgrad" autocomplete="off">
+	 <input type="radio" name="shaperad" id="undorad" autocomplete="off">
+	 </div>
      <script src="https://cdn.jsdelivr.net/npm/peerjs@0.3.20/dist/peer.min.js"></script>
      <script src="webrtc.js"></script>
      <script src="draggable.js"></script>
-     <script src="draw.js"></script>
+	 <script src="draw.js"></script>
  </body>
-
  </html>
