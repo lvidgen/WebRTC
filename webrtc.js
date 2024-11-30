@@ -100,8 +100,7 @@ fetch("https://stunauth.frostyer.com", options)
                }
             ]
         }
-    });    
-    });
+
 	
     // Create own peer object with connection to shared PeerJS server
     
@@ -156,6 +155,8 @@ fetch("https://stunauth.frostyer.com", options)
         conn = c;
 		*/
         showLogIns(peer, conn);
+    		});
+	});    
     });
 }
 
