@@ -85,7 +85,7 @@ function getId() {
         body: new URLSearchParams(params),
     };
 
-fetch("https://146.235.233.140/coturn-credential-api-main", options)
+fetch("https://stunauth.frostyer.com", options)
     .then((response) => response.json())
     .then((data) => {
         console.log(data);
