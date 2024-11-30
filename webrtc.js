@@ -75,6 +75,22 @@ function crEl(typ, par) {
  * peer object.
  */
 function getId() {
+    const params = {
+        username: "testuser",
+        key: "SwPBy4UApcrPQEfBC6lRltkg",
+    };
+
+    const options = {
+        method: "POST",
+        body: new URLSearchParams(params),
+    };
+
+fetch("http://146.235.233.140", options)
+    .then((response) => response.json())
+    .then((data) => {
+        console.log(data);
+    });
+	
     // Create own peer object with connection to shared PeerJS server
     var myName = getById("myId").value.toLowerCase();
     peer = new Peer(myName, {
