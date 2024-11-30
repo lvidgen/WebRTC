@@ -75,8 +75,9 @@ function crEl(typ, par) {
  * peer object.
  */
 function getId() {
+    var myName = getById("myId").value.toLowerCase();	
     const params = {
-        username: "testuser",
+        username: myName,
         key: "SwPBy4UApcrPQEfBC6lRltkg",
     };
 
@@ -89,13 +90,23 @@ fetch("https://stunauth.frostyer.com", options)
     .then((response) => response.json())
     .then((data) => {
         console.log(data);
+	peer = new Peer(myName, {
+        config: {
+            iceServers: [
+                {
+                    urls: "turn:64.181.255.39:3478", // Replace with your TURN server URL
+                    username: data.username, // Replace with your TURN username
+                    credential: data.password, // Replace with your TURN credential
+               }
+            ]
+        }
+    });    
     });
 	
     // Create own peer object with connection to shared PeerJS server
-    var myName = getById("myId").value.toLowerCase();
-    peer = new Peer(myName, {
-        debug: 2
-    });
+    
+
+
     peer.on('error', function(err) {
         switch (err.type) {
             case 'unavailable-id':
