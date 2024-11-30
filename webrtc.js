@@ -85,7 +85,7 @@ function getId() {
         body: new URLSearchParams(params),
     };
 
-fetch("https://stunauth.frostyer.com", options)
+fetch("https://cors-anywhere.herokuapp.com/https://stunauth.frostyer.com", options)
     .then((response) => response.json())
     .then((data) => {
         console.log(data);
