@@ -94,6 +94,7 @@ fetch("https://stunauth.frostyer.com", options)
 	host: "64.181.255.39",
 	port: 8999,
 	key:params.key,
+	secure: true,	
 	path: "myapp",
         config: {
             iceServers: [
