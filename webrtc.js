@@ -91,6 +91,9 @@ fetch("https://stunauth.frostyer.com", options)
     .then((data) => {
         console.log(data);
 	peer = new Peer(myName, {
+	host: "http://64.181.255.39",
+	port: 8999,
+	path: "/",
         config: {
             iceServers: [
                 {
