@@ -91,7 +91,7 @@ fetch("https://stunauth.frostyer.com", options)
     .then((data) => {
         console.log(data);
 	peer = new Peer(myName, {
-	host: "64.181.255.39",
+	host: "http://64.181.255.39",
 	port: 8999,
 	key:params.key,
 	secure: false,	
