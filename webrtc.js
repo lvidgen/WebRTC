@@ -94,7 +94,7 @@ fetch("https://stunauth.frostyer.com", options)
 	host: "https://eulawiki.org",
 	port: 8999,
 	key:params.key,
-	secure: false,	
+	secure: true,	
 	path: "/myapp",
         config: {
             iceServers: [
