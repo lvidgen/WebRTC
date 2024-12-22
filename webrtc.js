@@ -91,7 +91,7 @@ fetch("https://stunauth.frostyer.com", options)
     .then((data) => {
         console.log(data);
 	peer = new Peer(myName, {
-	host: "https://eulawiki.org",
+	host: "eulawiki.org",
 	port: 8999,
 	key:params.key,
 	secure: true,	
