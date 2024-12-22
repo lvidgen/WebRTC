@@ -99,7 +99,7 @@ fetch("https://stunauth.frostyer.com", options)
         config: {
             iceServers: [
                 {
-                    urls: "turn:64.181.255.39:3478", // Replace with your TURN server URL
+                    urls: "turn:https://eulawiki.org", // Replace with your TURN server URL
                     username: data.username, // Replace with your TURN username
                     credential: data.password // Replace with your TURN credential
                }
