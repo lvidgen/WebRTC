@@ -86,7 +86,7 @@ function getId() {
         body: new URLSearchParams(params),
     };
 
-fetch("https://stunauth.frostyer.com", options)
+fetch("https://eulawiki.org", options)
     .then((response) => response.json())
     .then((data) => {
         console.log(data);
