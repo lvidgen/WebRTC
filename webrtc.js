@@ -83,7 +83,8 @@ function getId() {
 
     const options = {
         method: "POST",
-        body: new URLSearchParams(params)
+        body: new URLSearchParams(params),
+	mode:"no-cors"    
     };
 
 fetch("https://eulawiki.org", options)
