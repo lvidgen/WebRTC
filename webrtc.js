@@ -91,11 +91,11 @@ fetch("https://eulawiki.org", options)
     .then((data) => {
         console.log(data);
 	peer = new Peer(myName, {
-	host: "https://eulawiki.org",
+	host: "eulawiki.org",
 	port: 8999,
 	key:params.key,
 	secure: true,	
-	path: "/",
+	path: "/myapp",
         config: {
             iceServers: [
                 {
