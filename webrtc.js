@@ -95,7 +95,7 @@ fetch("https://eulawiki.org", options)
 	port: 8999,
 	key:params.key,
 	secure: true,	
-	path: "/myapp",
+	path: "/",
         config: {
             iceServers: [
                 {
