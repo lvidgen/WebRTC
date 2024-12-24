@@ -87,7 +87,7 @@ function getId() {
 	mode:"no-cors"    
     };
 
-fetch("https://eulawiki.org", options)
+fetch("https://eulawiki.org/creds", options)
     .then((response) => response.json())
     .then((data) => {
         console.log(data);
