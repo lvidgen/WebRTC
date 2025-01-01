@@ -79,7 +79,7 @@ Yay. We have connectivity. Let's SSH into the server and start setting it up.
 ### 6. Access the server via SSH
 In the command prompt, navigate to the folder where you saved your private SSH key file, then enter the following command, replacing the name of the key file that you saved and the IP address:
 ```
-ssh -i your_private_key_name.key ubuntu@152.70.124.60
+ssh -i your_private_key_name.key ubuntu@your_public_ip_address
 ```
 
 The first time you attempt access you will be asked to confirm:
@@ -459,10 +459,8 @@ The coturn-credential-api is written in php. Some Linux distributions come with 
 apt-cache policy php
 ```
 At the time of writing, it was 7.4, so we want php7.4-fpm (you can read about fpm [here](https://php-fpm.org/)):
-
-Then restart nginx...
 ```
-sudo systemctl restart nginx
+sudo apt install php7.4-fpm
 ```
 Now we need to edit the nginx configuration to work with php and fpm.
 ```
@@ -534,8 +532,6 @@ getById("sub_id_btn").onclick = function() {
                 setConnection(conn);
             });
 
-
-
             getById("sub_peer_btn").onclick = function() {
                 conn = peer.connect(getById("peerid").value);
                 conn.on('open', function() {
@@ -545,3 +541,23 @@ getById("sub_id_btn").onclick = function() {
         });
 }
 ```
+If you can get a connection, we're basically done.
+
+### 13. Tightening and tidying
+The above is a fairly minimal example, but in real life you wouldn't stop here - there are a couple of things you would want to look at before you wold be comfortable leaving this running unattended.
+
+#### Authentication
+This app is designed with ad-hoc connections in mind, where a user chooses their own username and just connects without an account. This necessarily exposes the credentials mechanism in the JavaScript. The coturn server allows for a range of more robust database-based authentication methods that would involve creating accounts, etc.
+
+What we have in place now prevents abuse in that it doesn't expose login details for your TURN server that can be used for longer than 24 hours (this time limit can be set in the credentaials API `config.inc.php` file), so a super-naive "bad actor" would have to come back to the app once a day to get new credentials. A slightly more sophisticated bad actor could just include the "fetch" function in their own code and authenticate that way. A simple way to prevent that kind of abuse would be to edit the line in the `index.php` file of the credentials API to not accept cross-origin resource sharing (CORS), or restrict it to certain domains. The PeerJS server also has a CORS option that you can stipulate when starting the server.
+
+#### Security list and Firewall
+We opened a bunch of ports for testing that we don't really need open any more and best practice would be to close them, both on the server's security list and in iptables. For the above setup, all we really need open is:
+* 22 for SSH communication
+* 443 for web traffic
+* 9000 for the peerJS server
+* 5349 for the Coturn listening port
+* 49152-65535 for Coturn relay ports
+
+Everything else can be shut down.  
+
