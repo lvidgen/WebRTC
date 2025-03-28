@@ -147,7 +147,7 @@ If everything worked OK you should now be able to refresh your browser page and 
 
 ### 8. Make a sample web app
 #### Take ownership of the web files folder
-It's time to start uploading some files to our web server, but before we do that we want to take over ownership of the directory that nginx uses to serve webpages. If we don't, we'll have to add "sudo" to the start of every command which is annoying. The defult location for web files is in /var/www/html, so to check ownership we can run
+It's time to start uploading some files to our web server, but before we do that we want to take over ownership of the directory that nginx uses to serve webpages. If we don't, we'll have to add "sudo" to the start of every command which is annoying. The default location for web files is in /var/www/html, so to check ownership we can run
 ```
 ls -l /var/www/html
 ```
@@ -544,7 +544,7 @@ getById("sub_id_btn").onclick = function() {
 If you can get a connection, we're basically done.
 
 ### 13. Tightening and tidying
-The above is a fairly minimal example, but in real life you wouldn't stop here - there are a couple of things you would want to look at before you wold be comfortable leaving this running unattended.
+The above is a fairly minimal example, but in real life you wouldn't stop here - there are a couple of things you would want to look at before you would be comfortable leaving this running unattended.
 
 #### Authentication
 This app is designed with ad-hoc connections in mind, where a user chooses their own username and just connects without an account. This necessarily exposes the credentials mechanism in the JavaScript. The coturn server allows for a range of more robust database-based authentication methods that would involve creating accounts, etc.
